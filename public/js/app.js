@@ -72,11 +72,16 @@
     const layer = (z, ...k) => h('div', { class: 'layer', style: '--z:' + z + 'px' }, ...k);
     const fl = (n, z) => layer(z, h('span', { class: 'fl-wrap f' + n }, h('i', { class: 'float' })));
     const art = h('div', { class: 'hero-art' }, h('div', { class: 'stage' },
+      layer(-30, h('div', { class: 'aurora' }, h('i'), h('i'), h('i'))),
       layer(0, h('div', { class: 'hero-orb' }, h('i', { class: 'glare' }))),
+      layer(30, h('div', { class: 'orbit o1' }, h('div', { class: 'orbit-spin' }))),
+      layer(80, h('div', { class: 'orbit o2' }, h('div', { class: 'orbit-spin' }))),
       layer(46, ringSvg),
       d.image ? layer(100, h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }))
         : [layer(40, h('img', { class: 'hero-mark shadow', src: src(s.logoMark), alt: '' })), layer(120, h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName) }))],
-      fl(1, 175), fl(2, 70), fl(3, 205)));
+      layer(126, d.image ? null : h('i', { class: 'mark-shine', style: 'mask-image:url(' + src(s.logoMark) + ');-webkit-mask-image:url(' + src(s.logoMark) + ')' })),
+      fl(1, 175), fl(2, 70), fl(3, 205),
+      ((C.marquee && C.marquee.items) || []).slice(0, 3).map((it, i) => layer(150 + i * 30, h('span', { class: 'chip3d c' + (i + 1) }, h('i'), t(it.text))))));
     const btn = (b, solid) => b && t(b.label) ? h('a', { class: 'btn mag' + (solid ? ' solid' : ''), href: b.link || '#' }, t(b.label), icon('arrow', 'arr')) : null;
     return h('section', { class: 'hero', id: 'hero' },
       h('div', { class: 'hero-grid' }), h('div', { class: 'hero-glow' }), h('canvas', { class: 'hero-fx', 'aria-hidden': 'true' }),
@@ -193,7 +198,7 @@
     $('#header').replaceChildren(h('div', { class: 'container hd' },
       h('a', { class: 'brand', href: '#hero', 'aria-label': t(s.brandName) }, h('img', { src: src(s.logoMark), alt: '' }), h('span', { text: t(s.brandName) })),
       h('nav', { class: 'nav' }, h('i', { class: 'nav-pill' }), secs.map(link)),
-      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
+      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta mag', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang mag', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
         h('button', { class: 'burger', 'aria-label': 'Menu' }, h('i'), h('i')))));
     navPill();
     $('#menu').replaceChildren(...secs.map((x, i) => { const a = link(x); a.style.transitionDelay = (i * 60 + 200) + 'ms'; return a; }));
@@ -298,6 +303,10 @@
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     activeCat = 'all';
+    // hover origin for fill effects
+    const HOV = '.btn, .hd-cta, .chip, .lang, .clink, .round, .to-top';
+    document.addEventListener('pointerover', (e) => { const el = e.target.closest(HOV); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty('--x', (e.clientX - r.left) + 'px'); el.style.setProperty('--y', (e.clientY - r.top) + 'px'); }, sig);
+    document.addEventListener('pointerout', (e) => { const el = e.target.closest(HOV); if (!el || el.contains(e.relatedTarget)) return; const r = el.getBoundingClientRect(); el.style.setProperty('--x', (e.clientX - r.left) + 'px'); el.style.setProperty('--y', (e.clientY - r.top) + 'px'); }, sig);
     // header state
     let last = 0;
     addEventListener('scroll', () => {

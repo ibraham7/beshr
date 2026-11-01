@@ -75,7 +75,7 @@ section { position: relative; }
 .nav a:hover, .nav a.active { color: var(--c-text); }
 .nav a.active { color: var(--c-accent); }
 .hd-actions { justify-self: end; display: flex; align-items: center; gap: 8px; }
-.hd-cta { display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 20px; border-radius: 99px; background: var(--c-accent); color: var(--c-bg); font-weight: 600; font-size: 14.5px; transition: transform .5s var(--ease), box-shadow .5s var(--ease), background .3s; white-space: nowrap; }
+.hd-cta { position: relative; overflow: hidden; isolation: isolate; display: inline-flex; align-items: center; gap: 8px; height: 42px; padding: 0 20px; border-radius: 99px; background: var(--c-accent); color: var(--c-bg); font-weight: 600; font-size: 14.5px; transition: transform .5s var(--ease), box-shadow .5s var(--ease), background .3s; white-space: nowrap; }
 .hd-cta:hover { transform: translateY(-2px); box-shadow: 0 10px 28px -8px color-mix(in srgb, var(--c-accent) 70%, transparent); background: var(--c-text); }
 .hd-cta svg { width: 16px; height: 16px; transition: transform .4s var(--ease); } [dir=rtl] .hd-cta svg { transform: scaleX(-1); }
 .hd-cta:hover svg { transform: translateX(3px); } [dir=rtl] .hd-cta:hover svg { transform: scaleX(-1) translateX(3px); }
@@ -97,10 +97,14 @@ section { position: relative; }
 
 /* ============ buttons ============ */
 .btn { position: relative; display: inline-flex; align-items: center; gap: 12px; padding: 16px 30px; border-radius: 99px; font-weight: 600; font-size: 16px; overflow: hidden; isolation: isolate; border: 1px solid var(--line); transition: color .45s var(--ease), border-color .45s; will-change: transform; }
-.btn::before { content: ""; position: absolute; inset: 0; background: var(--c-accent); transform: translateY(101%); border-radius: 50% 50% 0 0 / 100% 100% 0 0; transition: transform .6s var(--ease), border-radius .6s var(--ease); z-index: -1; }
-.btn:hover { color: var(--c-bg); border-color: var(--c-accent); }
-.btn:hover::before { transform: none; border-radius: 0; }
 .btn.solid { background: var(--c-accent); color: var(--c-bg); border-color: var(--c-accent); }
+.btn::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--c-accent); clip-path: circle(0 at var(--x, 50%) var(--y, 100%)); transition: clip-path .7s var(--ease); }
+.btn::after, .hd-cta::after { content: ""; position: absolute; inset: 0; z-index: 1; pointer-events: none; background: linear-gradient(105deg, transparent 35%, rgba(255, 255, 255, .55) 50%, transparent 65%); transform: translateX(-130%); }
+.btn:hover::before { clip-path: circle(150% at var(--x, 50%) var(--y, 100%)); }
+.btn:hover::after, .hd-cta:hover::after { transform: translateX(130%); transition: transform .9s var(--ease); }
+.btn:hover { color: var(--c-bg); border-color: var(--c-accent); box-shadow: 0 14px 36px -12px color-mix(in srgb, var(--c-accent) 55%, transparent); }
+.btn:active, .hd-cta:active, .chip:active, .lang:active { scale: .95; }
+.btn { transition: color .45s var(--ease), border-color .45s, box-shadow .5s var(--ease), scale .25s var(--ease); }
 .btn.solid::before { background: var(--c-text); }
 .btn svg { width: 18px; height: 18px; transition: transform .45s var(--ease); }
 [dir=rtl] .btn svg.arr { transform: scaleX(-1); }
@@ -299,8 +303,57 @@ html[lang=en] .contact-big { letter-spacing: -.045em; line-height: 1; }
 .to-top .round { width: 40px; height: 40px; }
 
 /* ============ misc ============ */
-.mag { display: inline-block; }
+.mag:not(.hd-cta):not(.lang):not(.btn) { display: inline-block; }
 :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
 }
+
+/* ============ hover system ============ */
+.chip { position: relative; overflow: hidden; isolation: isolate; }
+.chip::before, .lang::before, .round::before { content: ""; position: absolute; inset: 0; z-index: -1; background: var(--c-accent); clip-path: circle(0 at var(--x, 50%) var(--y, 50%)); transition: clip-path .6s var(--ease); border-radius: inherit; }
+.chip:hover::before, .lang:hover::before, .round:hover::before { clip-path: circle(150% at var(--x, 50%) var(--y, 50%)); }
+.chip:hover, .lang:hover { color: var(--c-bg); border-color: var(--c-accent); transform: translateY(-2px); box-shadow: 0 10px 26px -10px color-mix(in srgb, var(--c-accent) 60%, transparent); }
+.chip.on::before { display: none; }
+.lang { position: relative; overflow: hidden; isolation: isolate; }
+.lang:hover { background: transparent; }
+.round { position: relative; overflow: hidden; isolation: isolate; }
+.round:hover { background: transparent; color: var(--c-bg); }
+.round:hover svg { transform: rotate(-12deg) scale(1.12); } .round svg { transition: transform .45s var(--ease); }
+.brand span { background: linear-gradient(100deg, var(--c-text) 40%, var(--c-accent) 50%, var(--c-text) 60%) 100% 0 / 250% 100% no-repeat; -webkit-background-clip: text; background-clip: text; color: transparent; transition: background-position .9s var(--ease); }
+.brand:hover span { background-position: 0 0; }
+.nav a { transition: color .35s, transform .45s var(--ease); } .nav a:hover { transform: translateY(-2px); }
+.burger { transition: .4s var(--ease); } .burger:hover { background: color-mix(in srgb, var(--c-accent) 14%, transparent); border-color: var(--c-accent); transform: rotate(8deg) scale(1.06); }
+.clink { position: relative; overflow: hidden; } .clink::after { content: "\2197"; position: absolute; inset-inline-end: 18px; top: 50%; translate: 0 -50%; opacity: 0; transform: translate(-6px, 6px); transition: .45s var(--ease); font-size: 18px; } .clink:hover::after { opacity: 1; transform: none; } .clink:hover b { transform: translateX(6px); } .clink b { transition: transform .45s var(--ease); }
+.to-top:hover .round { background: transparent; } .to-top:hover .round svg { animation: nudge .7s var(--ease) infinite alternate; } @keyframes nudge { to { transform: translateY(-5px); } }
+.work { transition: transform .7s var(--ease), box-shadow .7s var(--ease); } .work:hover { transform: translateY(-8px) scale(1.012); box-shadow: 0 30px 70px -24px rgba(0, 0, 0, .65), 0 0 0 1px color-mix(in srgb, var(--c-accent) 35%, transparent); }
+.stat { transition: transform .6s var(--ease), border-color .4s, background .4s; } .stat:hover { transform: translateY(-6px); border-color: color-mix(in srgb, var(--c-accent) 50%, transparent); background: color-mix(in srgb, var(--c-accent) 8%, var(--c-surface)); }
+.step .dot { transition: .5s var(--ease); } .step:hover .dot { background: var(--c-accent); color: var(--c-bg); transform: scale(1.15) rotate(-8deg); }
+.fld input:hover, .fld textarea:hover, .fld select:hover { border-color: color-mix(in srgb, var(--c-accent) 40%, transparent); }
+.foot-logo img { transition: transform .8s var(--ease), filter .8s; } .foot-logo img:hover { transform: scale(1.08) rotate(-3deg); filter: drop-shadow(0 0 30px color-mix(in srgb, var(--c-accent) 50%, transparent)); }
+.socials .chip { padding: 9px 20px; }
+
+/* ============ hero showpiece ============ */
+.aurora { position: absolute; inset: -22%; pointer-events: none; }
+.aurora i { position: absolute; border-radius: 50%; }
+.aurora i:nth-child(1) { width: 62%; height: 62%; top: 4%; inset-inline-start: 2%; background: radial-gradient(circle, color-mix(in srgb, var(--c-accent) 38%, transparent), transparent 68%); animation: drift1 11s ease-in-out infinite alternate; }
+.aurora i:nth-child(2) { width: 58%; height: 58%; bottom: 2%; inset-inline-end: 4%; background: radial-gradient(circle, color-mix(in srgb, var(--c-sage) 34%, transparent), transparent 68%); animation: drift2 13s ease-in-out infinite alternate; }
+.aurora i:nth-child(3) { width: 48%; height: 48%; top: 30%; inset-inline-end: 20%; background: radial-gradient(circle, color-mix(in srgb, var(--c-primary) 90%, #4fd1c5 10%), transparent 70%); animation: drift3 9s ease-in-out infinite alternate; }
+@keyframes drift1 { to { transform: translate(32%, 26%) scale(1.25); } } @keyframes drift2 { to { transform: translate(-30%, -24%) scale(1.2); } } @keyframes drift3 { to { transform: translate(-22%, 30%) scale(.8); } }
+.orbit { position: absolute; inset: -6%; transform-style: preserve-3d; transform: rotateX(72deg); pointer-events: none; }
+.orbit.o2 { inset: -16%; transform: rotateX(62deg) rotateY(-34deg); }
+.orbit-spin { position: absolute; inset: 0; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--c-accent) 28%, transparent); animation: spinz 9s linear infinite; }
+.orbit.o2 .orbit-spin { border-style: dashed; border-color: color-mix(in srgb, var(--c-sage) 30%, transparent); animation: spinz 15s linear infinite reverse; }
+.orbit-spin::before, .orbit-spin::after { content: ""; position: absolute; width: 14px; height: 14px; border-radius: 4px; background: var(--c-accent); box-shadow: 0 0 22px 4px color-mix(in srgb, var(--c-accent) 70%, transparent); top: -7px; left: calc(50% - 7px); rotate: 45deg; }
+.orbit-spin::after { top: auto; bottom: -7px; width: 9px; height: 9px; left: calc(50% - 4px); background: var(--c-text); box-shadow: 0 0 16px 3px rgba(255, 255, 255, .5); }
+@keyframes spinz { to { transform: rotate(360deg); } }
+.mark-shine { position: relative; display: block; width: 50%; height: 76%; mask-size: contain; mask-repeat: no-repeat; mask-position: center; -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; background: linear-gradient(110deg, transparent 38%, rgba(255, 255, 255, .95) 50%, transparent 62%) 160% 0 / 260% 100% no-repeat; animation: shine 4.2s ease-in-out infinite; }
+@keyframes shine { 0%, 35% { background-position: 160% 0; } 80%, 100% { background-position: -60% 0; } }
+.chip3d { position: absolute; display: inline-flex; align-items: center; gap: 8px; padding: 9px 16px; border-radius: 99px; font-size: 13px; font-weight: 600; white-space: nowrap; background: color-mix(in srgb, var(--c-surface) 70%, transparent); border: 1px solid color-mix(in srgb, var(--c-accent) 30%, transparent); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); box-shadow: 0 16px 40px -14px rgba(0, 0, 0, .6); pointer-events: auto; cursor: default; animation: bob 5.5s ease-in-out infinite; transition: background .4s, color .4s, border-color .4s, scale .4s var(--ease); }
+.chip3d i { width: 7px; height: 7px; background: var(--c-accent); border-radius: 2px; rotate: 45deg; }
+.chip3d:hover { background: var(--c-accent); color: var(--c-bg); border-color: var(--c-accent); scale: 1.1; } .chip3d:hover i { background: var(--c-bg); }
+.chip3d.c1 { top: 12%; inset-inline-end: -4%; } .chip3d.c2 { bottom: 20%; inset-inline-start: -8%; animation-delay: -2s; } .chip3d.c3 { bottom: 4%; inset-inline-end: 6%; animation-delay: -3.6s; }
+.hero h1 .split-line:last-child .w { background: linear-gradient(100deg, var(--c-accent) 25%, #fff 47%, var(--c-accent) 70%) 0 0 / 240% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; animation: txt 5s linear infinite; }
+.hero h1 .split-line:last-child .w:hover { color: transparent; text-shadow: none; }
+@keyframes txt { to { background-position: -240% 0; } }
+@media (max-width: 880px) { .chip3d.c1 { inset-inline-end: 0; } .chip3d.c2 { inset-inline-start: 0; } .chip3d { font-size: 12px; padding: 7px 13px; } }
