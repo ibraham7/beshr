@@ -5,12 +5,12 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const IS_PREVIEW = window.parent !== window;
-  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches && !/[?&]motion=1/.test(location.search);
   const FINE = matchMedia('(pointer: fine)').matches;
 
   let C = window.__CONTENT__ || {};
   let lang = (() => { try { return localStorage.getItem('bs-lang'); } catch { return null; } })() || (C.settings && C.settings.defaultLang) || 'ar';
-  let lenis = null, gctx = null, ac = null, booted = false;
+  let lenis = null, gctx = null, ac = null, booted = false, cleanups = [];
   const hasGSAP = () => typeof window.gsap !== 'undefined' && typeof window.ScrollTrigger !== 'undefined';
 
   /* ---------- helpers ---------- */
@@ -69,10 +69,14 @@
     const d = C.hero || {}, s = C.settings || {};
     const ring = (() => { const b = d.ringText || 'BESHR KASHKOUSH • '; return b.repeat(Math.max(1, Math.ceil(70 / b.length))); })();
     const ringSvg = (() => { const e = svg(`<defs><path id="rp" d="M50,50 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs><text><textPath href="#rp" startOffset="0">${ring.replace(/[<&]/g, '')}</textPath></text>`, 'ring-svg'); e.setAttribute('viewBox', '0 0 100 100'); e.removeAttribute('stroke'); requestAnimationFrame(() => { const tx = e.querySelector('text'); if (!tx || !tx.getNumberOfChars) return; const n = tx.getNumberOfChars(); tx.style.letterSpacing = '0'; const nat = tx.getComputedTextLength(); tx.style.letterSpacing = Math.max(0, (268 - nat) / n) + 'px'; }); return e; })();
-    const art = h('div', { class: 'hero-art', 'data-depth': '14' },
-      h('div', { class: 'hero-orb', 'data-depth': '-10' }), ringSvg,
-      d.image ? h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }) : h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName), 'data-depth': '26' }),
-      h('i', { class: 'float f1', 'data-depth': '40' }), h('i', { class: 'float f2', 'data-depth': '-30' }), h('i', { class: 'float f3', 'data-depth': '22' }));
+    const layer = (z, ...k) => h('div', { class: 'layer', style: '--z:' + z + 'px' }, ...k);
+    const fl = (n, z) => layer(z, h('span', { class: 'fl-wrap f' + n }, h('i', { class: 'float' })));
+    const art = h('div', { class: 'hero-art' }, h('div', { class: 'stage' },
+      layer(0, h('div', { class: 'hero-orb' }, h('i', { class: 'glare' }))),
+      layer(46, ringSvg),
+      d.image ? layer(100, h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }))
+        : [layer(40, h('img', { class: 'hero-mark shadow', src: src(s.logoMark), alt: '' })), layer(120, h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName) }))],
+      fl(1, 175), fl(2, 70), fl(3, 205)));
     const btn = (b, solid) => b && t(b.label) ? h('a', { class: 'btn mag' + (solid ? ' solid' : ''), href: b.link || '#' }, t(b.label), icon('arrow', 'arr')) : null;
     return h('section', { class: 'hero', id: 'hero' },
       h('div', { class: 'hero-grid' }), h('div', { class: 'hero-glow' }),
@@ -207,6 +211,7 @@
   /* ---------- mount ---------- */
   function mount() {
     if (gctx) { gctx.revert(); gctx = null; }
+    cleanups.forEach((f) => f()); cleanups = [];
     if (ac) ac.abort(); ac = new AbortController();
     if (hasGSAP()) window.ScrollTrigger.getAll().forEach((s) => s.kill());
     applyTheme(); buildHeader();
@@ -296,7 +301,7 @@
   /* ---------- motion ---------- */
   function animate() {
     const { gsap, ScrollTrigger } = window; gsap.registerPlugin(ScrollTrigger);
-    gctx = gsap.context(() => {
+    gctx = gsap.context((self) => {
       if (REDUCED) { return; }
       const sig = { signal: ac.signal };
       // split headings (hero handled by intro timeline)
@@ -338,7 +343,7 @@
         const w = () => track.firstChild.getBoundingClientRect().width; let x = 0, vel = 0, dir = -1;
         ScrollTrigger.create({ onUpdate: (self) => { vel = self.getVelocity(); } });
         const tick = (time, dt) => { const gw = w(); if (!gw) return; const boost = Math.min(Math.abs(vel) / 160, 14); x += dir * (1.1 + boost) * (dt / 16.6); if (x <= -gw) x += gw; if (x > 0) x -= gw; track.style.transform = `translate3d(${x}px,0,0)`; vel *= .9; };
-        gsap.ticker.add(tick); gctx.add(() => gsap.ticker.remove(tick));
+        gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
       }
       // card tilt + glow, magnetic
       if (FINE) {
@@ -353,14 +358,24 @@
           b.addEventListener('mousemove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - (r.left + r.width / 2)) * .28); my((e.clientY - (r.top + r.height / 2)) * .4); }, sig);
           b.addEventListener('mouseleave', () => { mx(0); my(0); }, sig);
         });
-        // hero depth parallax
-        const hero = $('.hero'); if (hero) {
-          const layers = $$('[data-depth]', hero).map((el) => ({ qx: gsap.quickTo(el, 'x', { duration: 1, ease: 'power3' }), qy: gsap.quickTo(el, 'y', { duration: 1, ease: 'power3' }), d: +el.dataset.depth }));
-          hero.addEventListener('mousemove', (e) => {
-            const nx = e.clientX / innerWidth - .5, ny = e.clientY / innerHeight - .5;
-            layers.forEach((l) => { l.qx(nx * l.d * 2); l.qy(ny * l.d * 2); });
-            const g = $('.hero-glow'); g.style.setProperty('--mx', e.clientX + 'px'); g.style.setProperty('--my', e.clientY + 'px');
+        // hero: interactive 3D tilt on the logo stage + spotlight
+        const hero = $('.hero'), stage = $('.stage'), art = $('.hero-art'), orb = $('.hero-orb'), glow = $('.hero-glow');
+        if (hero && stage) {
+          let tx = 0, ty = 0, cx = 0, cy = 0, on = false;
+          hero.addEventListener('pointermove', (e) => {
+            const r = art.getBoundingClientRect();
+            tx = Math.max(-1, Math.min(1, ((e.clientX - (r.left + r.width / 2)) / innerWidth) * 2.4));
+            ty = Math.max(-1, Math.min(1, ((e.clientY - (r.top + r.height / 2)) / innerHeight) * 2.4)); on = true;
+            glow.style.setProperty('--mx', e.clientX + 'px'); glow.style.setProperty('--my', e.clientY + 'px');
           }, sig);
+          hero.addEventListener('pointerleave', () => { on = false; }, sig);
+          const tick = (time) => {
+            const gx = on ? tx : Math.sin(time * .6) * .4, gy = on ? ty : Math.cos(time * .45) * .28;
+            cx += (gx - cx) * .07; cy += (gy - cy) * .07;
+            stage.style.transform = 'rotateX(' + (-cy * 17).toFixed(2) + 'deg) rotateY(' + (cx * 24).toFixed(2) + 'deg)';
+            orb.style.setProperty('--gx', (32 + cx * 38) + '%'); orb.style.setProperty('--gy', (24 + cy * 38) + '%');
+          };
+          gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
         }
       }
     });
@@ -375,7 +390,7 @@
       tl.from('.hero .split-line > span', { yPercent: 120, rotate: 4, duration: 1.3, stagger: .14 })
         .from('.hero .rv', { y: 40, opacity: 0, duration: 1, stagger: .12 }, '-=.9')
         .from('.hero-art', { scale: .8, opacity: 0, duration: 1.6, ease: 'expo.out' }, '-=1.4')
-        .from('.hero .float', { scale: 0, duration: 1, stagger: .15, ease: 'back.out(2)' }, '-=1.1')
+        .from('.hero .fl-wrap', { scale: 0, duration: 1, stagger: .15, ease: 'back.out(2)' }, '-=1.1')
         .from('#header .hd > *', { y: -30, opacity: 0, duration: .9, stagger: .1 }, '-=1.2')
         .from('.scroll-hint', { opacity: 0, y: 20, duration: 1 }, '-=.6');
     });
