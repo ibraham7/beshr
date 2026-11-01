@@ -5,7 +5,9 @@
   const $ = (s, r = document) => r.querySelector(s);
   const $$ = (s, r = document) => [...r.querySelectorAll(s)];
   const IS_PREVIEW = window.parent !== window;
-  const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches && !/[?&]motion=1/.test(location.search);
+  // Motion is part of the brand: Windows users who switch off 'Animation effects' get prefers-reduced-motion,
+  // which would freeze the whole site, so motion only turns off when explicitly requested with ?motion=0.
+  const REDUCED = /[?&]motion=0/.test(location.search);
   const FINE = matchMedia('(pointer: fine)').matches;
 
   let C = window.__CONTENT__ || {};

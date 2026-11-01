@@ -296,9 +296,6 @@ html[lang=en] .contact-big { letter-spacing: -.045em; line-height: 1; }
 /* ============ misc ============ */
 .mag:not(.hd-cta):not(.lang):not(.btn) { display: inline-block; }
 :focus-visible { outline: 2px solid var(--c-accent); outline-offset: 3px; }
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
-}
 
 /* ============ shimmer details ============ */
 .mark-shine { position: relative; display: block; width: 50%; height: 76%; mask-size: contain; mask-repeat: no-repeat; mask-position: center; -webkit-mask-size: contain; -webkit-mask-repeat: no-repeat; -webkit-mask-position: center; background: linear-gradient(110deg, transparent 38%, rgba(255, 255, 255, .95) 50%, transparent 62%) 160% 0 / 260% 100% no-repeat; animation: shine 4.2s ease-in-out infinite; }
