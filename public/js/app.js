@@ -23,7 +23,7 @@
       if (k === 'class') el.className = v; else if (k === 'text') el.textContent = v;
       else if (k.startsWith('on')) el.addEventListener(k.slice(2), v); else el.setAttribute(k, v === true ? '' : v);
     }
-    for (const k of kids.flat()) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
+    for (const k of kids.flat(Infinity)) if (k != null && k !== false) el.append(k.nodeType ? k : document.createTextNode(k));
     return el;
   }
   const svg = (inner, cls = '') => { const s = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); s.setAttribute('viewBox', '0 0 24 24'); s.setAttribute('fill', 'none'); s.setAttribute('stroke', 'currentColor'); s.setAttribute('stroke-width', '1.7'); s.setAttribute('stroke-linecap', 'round'); s.setAttribute('stroke-linejoin', 'round'); if (cls) s.setAttribute('class', cls); s.innerHTML = inner; return s; };
@@ -44,7 +44,7 @@
   };
   const icon = (n, cls) => svg(ICONS[n] || ICONS.spark, cls);
   const lines = (txt) => String(txt || '').split('\n').map((l) => l.trim()).filter(Boolean);
-  const splitEl = (tag, cls, txt) => h(tag, { class: cls, 'data-split': '' }, lines(txt).map((l) => h('span', { class: 'split-line' }, h('span', { text: l }))));
+  const splitEl = (tag, cls, txt, words) => h(tag, { class: cls, 'data-split': '' }, lines(txt).map((l) => h('span', { class: 'split-line' }, words ? h('span', {}, l.split(/\s+/).map((w, i, a) => [h('span', { class: 'w', text: w }), i < a.length - 1 ? ' ' : null])) : h('span', { text: l }))));
   const num = (i) => String(i + 1).padStart(2, '0');
 
   /* ---------- theme ---------- */
@@ -79,11 +79,11 @@
       fl(1, 175), fl(2, 70), fl(3, 205)));
     const btn = (b, solid) => b && t(b.label) ? h('a', { class: 'btn mag' + (solid ? ' solid' : ''), href: b.link || '#' }, t(b.label), icon('arrow', 'arr')) : null;
     return h('section', { class: 'hero', id: 'hero' },
-      h('div', { class: 'hero-grid' }), h('div', { class: 'hero-glow' }),
+      h('div', { class: 'hero-grid' }), h('div', { class: 'hero-glow' }), h('canvas', { class: 'hero-fx', 'aria-hidden': 'true' }),
       h('div', { class: 'container hero-in' },
         h('div', { class: 'hero-text' },
           h('div', { class: 'eyebrow rv' }, t(d.eyebrow)),
-          splitEl('h1', '', t(d.title)),
+          splitEl('h1', '', t(d.title), true),
           h('p', { class: 'lead rv', text: t(d.subtitle) }),
           h('div', { class: 'hero-cta rv' }, btn(d.cta1, true), btn(d.cta2, false))), art),
       t(d.scroll) ? h('div', { class: 'scroll-hint' }, h('i'), t(d.scroll)) : null);
@@ -228,6 +228,61 @@
     if (hasGSAP()) animate();
   }
 
+  /* ---------- hero particle field: drifting diamonds, mouse constellation, click burst ---------- */
+  function heroFX(hero, sig) {
+    const cv = $('.hero-fx', hero); if (!cv) return;
+    const ctx = cv.getContext('2d'), cs = getComputedStyle(document.documentElement);
+    const col = [cs.getPropertyValue('--c-accent').trim() || '#c4e3c2', cs.getPropertyValue('--c-sage').trim() || '#8da58f', cs.getPropertyValue('--c-text').trim() || '#eef6ee'];
+    let W = 0, H = 0, dpr = 1, parts = [], rings = [], mx = -999, my = -999, inside = false, visible = true;
+    const rand = (a, b) => a + Math.random() * (b - a);
+    const make = (x, y, burst) => {
+      const z = rand(.35, 1), ang = rand(0, 6.283), sp = burst ? rand(2.2, 6) : rand(.12, .38);
+      return { x, y, bx: burst ? 0 : Math.cos(ang) * sp * z, by: burst ? 0 : Math.sin(ang) * sp * z - .05, vx: Math.cos(ang) * sp * (burst ? 1 : z), vy: Math.sin(ang) * sp * (burst ? 1 : z), s: rand(3, 9) * z, r: rand(0, 6.283), vr: rand(-.012, .012), z, c: col[Math.random() < .62 ? 0 : Math.random() < .6 ? 1 : 2], life: burst ? 1 : -1 };
+    };
+    const size = () => {
+      const r = hero.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height;
+      cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const n = Math.round(Math.min(70, Math.max(24, (W * H) / 22000)));
+      parts = parts.filter((p) => p.life >= 0); while (parts.filter((p) => p.life < 0).length < n) parts.push(make(rand(0, W), rand(0, H)));
+    };
+    size();
+    const ro = new ResizeObserver(size); ro.observe(hero); cleanups.push(() => ro.disconnect());
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; }); io.observe(hero); cleanups.push(() => io.disconnect());
+    const pos = (e) => { const r = hero.getBoundingClientRect(); return [e.clientX - r.left, e.clientY - r.top]; };
+    hero.addEventListener('pointermove', (e) => { [mx, my] = pos(e); inside = true; }, sig);
+    hero.addEventListener('pointerleave', () => { inside = false; }, sig);
+    hero.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('a, button')) return; const [x, y] = pos(e);
+      rings.push({ x, y, r: 6, a: .55 }, { x, y, r: 0, a: .35, d: 1.6 });
+      for (let i = 0; i < 16; i++) parts.push(make(x, y, true));
+    }, sig);
+    const tick = () => {
+      if (!visible) return; ctx.clearRect(0, 0, W, H);
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        if (inside) { const dx = p.x - mx, dy = p.y - my, d = Math.hypot(dx, dy); if (d < 150 && d > 0) { const f = (1 - d / 150) * .9 * p.z; p.vx += (dx / d) * f; p.vy += (dy / d) * f; } }
+        if (p.life >= 0) { p.vx *= .965; p.vy *= .965; p.life -= .014; if (p.life <= 0) { parts.splice(i, 1); continue; } }
+        else { p.vx += (p.bx - p.vx) * .03; p.vy += (p.by - p.vy) * .03; }
+        p.x += p.vx; p.y += p.vy; p.r += p.vr;
+        if (p.life < 0) { if (p.x < -20) p.x = W + 20; else if (p.x > W + 20) p.x = -20; if (p.y < -20) p.y = H + 20; else if (p.y > H + 20) p.y = -20; }
+      }
+      if (inside) { // constellation lines from the pointer to nearby diamonds
+        ctx.lineWidth = 1;
+        for (const p of parts) { const d = Math.hypot(p.x - mx, p.y - my); if (d < 170) { ctx.globalAlpha = (1 - d / 170) * .35; ctx.strokeStyle = col[0]; ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(p.x, p.y); ctx.stroke(); } }
+      }
+      for (const p of parts) {
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(.7854 + p.r); ctx.globalAlpha = (p.life >= 0 ? p.life : 1) * (.25 + p.z * .6); ctx.fillStyle = p.c;
+        const s = p.s; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-s / 2, -s / 2, s, s, s * .22) : ctx.rect(-s / 2, -s / 2, s, s); ctx.fill(); ctx.restore();
+      }
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const g = rings[i]; g.r += 4.2 * (g.d || 1); g.a *= .955; if (g.a < .01) { rings.splice(i, 1); continue; }
+        ctx.globalAlpha = g.a; ctx.strokeStyle = col[0]; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(g.x, g.y, g.r, 0, 6.283); ctx.stroke();
+      }
+      ctx.globalAlpha = 1;
+    };
+    gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
+  }
+
   /* ---------- behaviours ---------- */
   function wire() {
     const sig = { signal: ac.signal };
@@ -336,6 +391,7 @@
       // work cards: image parallax
       $$('.work-media img').forEach((im) => gsap.fromTo(im, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: im.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
       $$('.work-media img').forEach((im) => { im.style.height = '112%'; im.style.top = '-6%'; });
+      heroFX($('.hero'), { signal: ac.signal });
       // active nav
       (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); const nv = $('.nav'); nv && nv._move && nv._move(); } }); });
       // marquee driven by scroll velocity
