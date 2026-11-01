@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>لوحة التحكم — بشر</title>
+<link rel="icon" href="/assets/logo-mark.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/admin/admin.css">
+</head>
+<body>
+<div id="login" hidden>
+  <form id="loginForm" class="login-card">
+    <img src="/assets/logo-mark-light.png" alt="">
+    <h1>لوحة التحكم</h1>
+    <p>أدخل كلمة المرور لإدارة الموقع</p>
+    <input type="password" id="pw" placeholder="كلمة المرور" autocomplete="current-password" autofocus>
+    <button class="btn primary" type="submit">دخول</button>
+    <div class="err" id="loginErr"></div>
+  </form>
+</div>
+
+<div id="shell" hidden>
+  <header class="top">
+    <div class="top-l">
+      <img src="/assets/logo-mark-light.png" alt="" class="top-logo">
+      <b>لوحة التحكم</b>
+    </div>
+    <div class="top-r">
+      <span id="status" class="status"></span>
+      <div class="seg" id="devices" title="حجم المعاينة">
+        <button data-w="100%" class="on" aria-label="سطح المكتب">🖥</button>
+        <button data-w="820px" aria-label="تابلت">▭</button>
+        <button data-w="390px" aria-label="جوال">▯</button>
+      </div>
+      <button class="btn ghost" id="togglePrev">المعاينة</button>
+      <a class="btn ghost" href="/" target="_blank">عرض الموقع ↗</a>
+      <button class="btn primary" id="save">حفظ التغييرات</button>
+      <button class="btn ghost" id="logout">خروج</button>
+    </div>
+  </header>
+  <div class="layout">
+    <nav id="tabs" class="tabs"></nav>
+    <section id="editor" class="editor"></section>
+    <aside id="preview" class="preview"><div class="frame-wrap"><iframe id="frame" src="/" title="معاينة"></iframe></div></aside>
+  </div>
+</div>
+
+<div id="modal" class="modal" hidden></div>
+<div id="toast" class="toast"></div>
+<script src="/admin/admin.js"></script>
+</body>
+</html>

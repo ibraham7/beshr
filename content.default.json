@@ -1,0 +1,166 @@
+{
+  "settings": {
+    "brandName": { "ar": "بشر كشكوش", "en": "Beshr Kashkoush" },
+    "siteTitle": { "ar": "بشر كشكوش — مصمم جرافيك", "en": "Beshr Kashkoush — Graphic Designer" },
+    "description": {
+      "ar": "بشر كشكوش، مصمم جرافيك يصنع هويات بصرية وشعارات وتصاميم تحكي قصة العلامة وتبقى في الذاكرة.",
+      "en": "Beshr Kashkoush, a graphic designer crafting brand identities, logos and designs that tell a story and stay in memory."
+    },
+    "defaultLang": "ar",
+    "showLangSwitch": true,
+    "logoFull": "assets/logo-full-light.png",
+    "logoMark": "assets/logo-mark-light.png",
+    "logoOnLight": "assets/logo-full.png",
+    "favicon": "assets/logo-mark.png",
+    "ogImage": "",
+    "colors": {
+      "bg": "#0b2129",
+      "surface": "#102d37",
+      "primary": "#1e5060",
+      "accent": "#c4e3c2",
+      "sage": "#8da58f",
+      "text": "#eef6ee"
+    }
+  },
+
+  "sections": [
+    { "id": "hero", "visible": true, "nav": { "ar": "الرئيسية", "en": "Home" } },
+    { "id": "marquee", "visible": true, "nav": { "ar": "", "en": "" } },
+    { "id": "about", "visible": true, "nav": { "ar": "من أنا", "en": "About" } },
+    { "id": "services", "visible": true, "nav": { "ar": "الخدمات", "en": "Services" } },
+    { "id": "works", "visible": true, "nav": { "ar": "الأعمال", "en": "Work" } },
+    { "id": "process", "visible": true, "nav": { "ar": "آلية العمل", "en": "Process" } },
+    { "id": "contact", "visible": true, "nav": { "ar": "تواصل", "en": "Contact" } }
+  ],
+
+  "hero": {
+    "eyebrow": { "ar": "مصمم جرافيك", "en": "Graphic Designer" },
+    "title": { "ar": "أحوّل الفكرة\nإلى هوية\nلا تُنسى", "en": "I turn ideas\ninto identities\nyou remember" },
+    "subtitle": {
+      "ar": "أصمم هويات بصرية وشعارات وتصاميم بروح عربية معاصرة، تمنح علامتك حضوراً أنيقاً وصوتاً واضحاً.",
+      "en": "I design brand identities, logos and visuals with a contemporary Arabic spirit — giving your brand an elegant presence and a clear voice."
+    },
+    "cta1": { "label": { "ar": "شاهد أعمالي", "en": "View my work" }, "link": "#works" },
+    "cta2": { "label": { "ar": "لنبدأ مشروعك", "en": "Start a project" }, "link": "#contact" },
+    "image": "",
+    "ringText": "BESHR KASHKOUSH • GRAPHIC DESIGNER • ",
+    "scroll": { "ar": "مرّر للأسفل", "en": "Scroll" }
+  },
+
+  "marquee": {
+    "items": [
+      { "text": { "ar": "هوية بصرية", "en": "Brand Identity" } },
+      { "text": { "ar": "شعارات", "en": "Logo Design" } },
+      { "text": { "ar": "خط عربي", "en": "Arabic Calligraphy" } },
+      { "text": { "ar": "سوشيال ميديا", "en": "Social Media" } },
+      { "text": { "ar": "مطبوعات", "en": "Print" } },
+      { "text": { "ar": "تغليف", "en": "Packaging" } },
+      { "text": { "ar": "واجهات رقمية", "en": "Digital UI" } }
+    ]
+  },
+
+  "about": {
+    "eyebrow": { "ar": "من أنا", "en": "About me" },
+    "title": { "ar": "أصمم بقلب فنان\nوعقل استراتيجي", "en": "Designing with an artist's heart\nand a strategist's mind" },
+    "lead": {
+      "ar": "أنا بشر كشكوش، مصمم جرافيك أعمل في مختلف أنواع التصميم، من الشعارات والهويات إلى المطبوعات والمحتوى الرقمي.",
+      "en": "I'm Beshr Kashkoush, a graphic designer working across every kind of design — from logos and identities to print and digital content."
+    },
+    "body": {
+      "ar": "أؤمن أن التصميم الجيد ليس زينة، بل لغة تُقنع وتُلهم. أبدأ كل مشروع بفهم عميق لقصة العلامة وجمهورها، ثم أترجمها إلى عناصر بصرية متقنة تجمع بين جمال الخط العربي ونظافة التصميم الحديث.",
+      "en": "I believe good design isn't decoration — it's a language that persuades and inspires. I start every project by understanding the brand's story and audience, then translate it into refined visuals that blend the beauty of Arabic calligraphy with clean modern design."
+    },
+    "photo": "",
+    "stats": [
+      { "value": "120+", "label": { "ar": "مشروع منجز", "en": "Projects done" } },
+      { "value": "5+", "label": { "ar": "سنوات خبرة", "en": "Years of experience" } },
+      { "value": "60+", "label": { "ar": "عميل سعيد", "en": "Happy clients" } }
+    ],
+    "skills": [
+      { "name": { "ar": "الهويات البصرية", "en": "Brand Identity" }, "level": 95 },
+      { "name": { "ar": "تصميم الشعارات", "en": "Logo Design" }, "level": 96 },
+      { "name": { "ar": "الخط العربي", "en": "Arabic Typography" }, "level": 90 },
+      { "name": { "ar": "السوشيال ميديا", "en": "Social Media" }, "level": 92 },
+      { "name": { "ar": "المطبوعات والتغليف", "en": "Print & Packaging" }, "level": 88 }
+    ],
+    "tools": "Photoshop · Illustrator · InDesign · Figma · After Effects",
+    "cv": { "label": { "ar": "حمّل السيرة الذاتية", "en": "Download CV" }, "file": "" }
+  },
+
+  "services": {
+    "eyebrow": { "ar": "ماذا أقدّم", "en": "What I do" },
+    "title": { "ar": "خدمات تصميم\nمن الفكرة إلى التنفيذ", "en": "Design services\nfrom idea to execution" },
+    "items": [
+      { "icon": "brand", "title": { "ar": "الهوية البصرية", "en": "Brand Identity" }, "desc": { "ar": "منظومة كاملة تشمل الشعار والألوان والخطوط وأدلة الاستخدام لعلامة متماسكة.", "en": "A complete system — logo, colors, type and guidelines — for a cohesive brand." } },
+      { "icon": "pen", "title": { "ar": "تصميم الشعارات", "en": "Logo Design" }, "desc": { "ar": "شعارات مدروسة وفريدة، عربية ولاتينية، تعبّر عن جوهر علامتك ببساطة.", "en": "Considered, unique logos in Arabic and Latin that express your brand's essence simply." } },
+      { "icon": "type", "title": { "ar": "الخط العربي", "en": "Arabic Calligraphy" }, "desc": { "ar": "مخطوطات وتكوينات خطية معاصرة تمنح هويتك روحاً وأصالة.", "en": "Contemporary calligraphic compositions that give your identity soul and authenticity." } },
+      { "icon": "social", "title": { "ar": "السوشيال ميديا", "en": "Social Media" }, "desc": { "ar": "قوالب وتصاميم منشورات جذابة تحافظ على حضور علامتك وتناسق مظهرها.", "en": "Engaging post templates and visuals that keep your brand present and consistent." } },
+      { "icon": "print", "title": { "ar": "المطبوعات والتغليف", "en": "Print & Packaging" }, "desc": { "ar": "بروشورات وكتالوجات وعبوات جاهزة للطباعة بتفاصيل دقيقة.", "en": "Brochures, catalogs and packaging, print-ready down to the last detail." } },
+      { "icon": "layout", "title": { "ar": "واجهات رقمية", "en": "Digital Interfaces" }, "desc": { "ar": "تصاميم واجهات مواقع وتطبيقات عصرية سهلة الاستخدام.", "en": "Modern, easy-to-use website and app interface designs." } }
+    ]
+  },
+
+  "works": {
+    "eyebrow": { "ar": "معرض الأعمال", "en": "Selected work" },
+    "title": { "ar": "أعمال تتحدث\nعن نفسها", "en": "Work that speaks\nfor itself" },
+    "allLabel": { "ar": "الكل", "en": "All" },
+    "viewLabel": { "ar": "عرض", "en": "View" },
+    "categories": [
+      { "id": "branding", "name": { "ar": "هويات بصرية", "en": "Branding" } },
+      { "id": "logo", "name": { "ar": "شعارات", "en": "Logos" } },
+      { "id": "social", "name": { "ar": "سوشيال ميديا", "en": "Social" } },
+      { "id": "print", "name": { "ar": "مطبوعات", "en": "Print" } }
+    ],
+    "items": [
+      { "title": { "ar": "هوية مقهى الأصالة", "en": "Asala Café Identity" }, "category": "branding", "year": "2026", "client": "", "ratio": "portrait", "image": "assets/works/work-1.svg", "gallery": [], "desc": { "ar": "هوية بصرية متكاملة تستلهم الزخرفة العربية بأسلوب هندسي حديث.", "en": "A complete visual identity inspired by Arabic ornament in a modern geometric style." } },
+      { "title": { "ar": "شعار دار النور", "en": "Dar Al-Noor Logo" }, "category": "logo", "year": "2026", "client": "", "ratio": "square", "image": "assets/works/work-2.svg", "gallery": [], "desc": { "ar": "شعار يجمع بين الخط العربي والرمز الهندسي في توازن هادئ.", "en": "A logo balancing Arabic lettering and a geometric symbol." } },
+      { "title": { "ar": "حملة إطلاق منتج", "en": "Product Launch Campaign" }, "category": "social", "year": "2025", "client": "", "ratio": "landscape", "image": "assets/works/work-3.svg", "gallery": [], "desc": { "ar": "تصاميم حملة سوشيال ميديا متناسقة لإطلاق منتج جديد.", "en": "A cohesive social media campaign for a new product launch." } },
+      { "title": { "ar": "هوية متجر ورد", "en": "Ward Boutique" }, "category": "branding", "year": "2025", "client": "", "ratio": "portrait", "image": "assets/works/work-4.svg", "gallery": [], "desc": { "ar": "ألوان ناعمة وتكوينات عضوية لعلامة تجارية أنثوية راقية.", "en": "Soft colors and organic forms for a refined boutique brand." } },
+      { "title": { "ar": "تقرير سنوي", "en": "Annual Report" }, "category": "print", "year": "2025", "client": "", "ratio": "landscape", "image": "assets/works/work-5.svg", "gallery": [], "desc": { "ar": "تصميم تقرير سنوي بتمثيل بياني أنيق وتسلسل قراءة واضح.", "en": "An annual report with elegant data visualization and clear reading flow." } },
+      { "title": { "ar": "شعار تقنية", "en": "Tech Studio Mark" }, "category": "logo", "year": "2024", "client": "", "ratio": "square", "image": "assets/works/work-6.svg", "gallery": [], "desc": { "ar": "رمز معاصر من أشكال متداخلة لشركة ناشئة تقنية.", "en": "A contemporary symbol of overlapping forms for a tech startup." } },
+      { "title": { "ar": "غلاف ألبوم", "en": "Album Cover" }, "category": "print", "year": "2024", "client": "", "ratio": "landscape", "image": "assets/works/work-7.svg", "gallery": [], "desc": { "ar": "غلاف ألبوم موسيقي بخطوط انسيابية تعكس الإيقاع.", "en": "A music album cover with flowing lines that echo rhythm." } },
+      { "title": { "ar": "هوية مبادرة", "en": "Initiative Identity" }, "category": "branding", "year": "2024", "client": "", "ratio": "portrait", "image": "assets/works/work-8.svg", "gallery": [], "desc": { "ar": "نظام بصري مرن لمبادرة مجتمعية يتكيف مع كل الوسائط.", "en": "A flexible visual system for a community initiative across all media." } }
+    ]
+  },
+
+  "process": {
+    "eyebrow": { "ar": "آلية العمل", "en": "How I work" },
+    "title": { "ar": "أربع خطوات\nنحو تصميم متقن", "en": "Four steps\nto refined design" },
+    "steps": [
+      { "title": { "ar": "الاستكشاف", "en": "Discover" }, "desc": { "ar": "نتحدث عن علامتك وجمهورك وأهدافك لنفهم القصة قبل رسم أي خط.", "en": "We talk about your brand, audience and goals to understand the story before drawing a line." } },
+      { "title": { "ar": "الأفكار", "en": "Concept" }, "desc": { "ar": "أبحث وأرسم وأطوّر عدة اتجاهات إبداعية مدروسة.", "en": "I research, sketch and develop several considered creative directions." } },
+      { "title": { "ar": "التصميم", "en": "Design" }, "desc": { "ar": "نختار الاتجاه الأقوى ونصقله حتى آخر تفصيلة مع تعديلات مرنة.", "en": "We pick the strongest direction and refine it to the last detail with flexible revisions." } },
+      { "title": { "ar": "التسليم", "en": "Deliver" }, "desc": { "ar": "ملفات جاهزة بكل الصيغ مع دليل استخدام واضح.", "en": "Files ready in every format with a clear usage guide." } }
+    ]
+  },
+
+  "contact": {
+    "eyebrow": { "ar": "تواصل معي", "en": "Get in touch" },
+    "title": { "ar": "لنصنع شيئاً\nاستثنائياً معاً", "en": "Let's make something\nexceptional together" },
+    "subtitle": { "ar": "عندك فكرة أو مشروع؟ اكتب لي وسأرد عليك بأقرب وقت.", "en": "Got an idea or a project? Write to me and I'll get back to you soon." },
+    "email": "",
+    "phone": "",
+    "whatsapp": "",
+    "location": { "ar": "", "en": "" },
+    "socials": [
+      { "name": "Instagram", "url": "" },
+      { "name": "Behance", "url": "" },
+      { "name": "LinkedIn", "url": "" }
+    ],
+    "form": {
+      "name": { "ar": "الاسم", "en": "Your name" },
+      "contact": { "ar": "البريد أو رقم الهاتف", "en": "Email or phone" },
+      "service": { "ar": "نوع المشروع", "en": "Project type" },
+      "message": { "ar": "حدثني عن مشروعك", "en": "Tell me about your project" },
+      "send": { "ar": "إرسال الرسالة", "en": "Send message" },
+      "ok": { "ar": "وصلتني رسالتك، شكراً! سأرد عليك قريباً.", "en": "Message received, thank you! I'll reply soon." },
+      "fail": { "ar": "تعذر الإرسال، حاول مرة أخرى.", "en": "Couldn't send, please try again." }
+    }
+  },
+
+  "footer": {
+    "text": { "ar": "جميع الحقوق محفوظة", "en": "All rights reserved" },
+    "tagline": { "ar": "صُنع بشغف في عالم التصميم", "en": "Crafted with passion for design" },
+    "top": { "ar": "للأعلى", "en": "Back to top" }
+  }
+}

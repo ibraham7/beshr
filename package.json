@@ -1,0 +1,13 @@
+{
+  "name": "beshr",
+  "version": "1.0.0",
+  "description": "Beshr Kashkoush — graphic designer portfolio with a full admin panel",
+  "private": true,
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "covers": "node scripts/gen-covers.js"
+  },
+  "engines": { "node": ">=18" }
+}
