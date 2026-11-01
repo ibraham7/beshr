@@ -188,10 +188,20 @@
     const link = (x) => h('a', { href: '#' + x.id, 'data-nav': x.id, text: t(x.nav) });
     $('#header').replaceChildren(h('div', { class: 'container hd' },
       h('a', { class: 'brand', href: '#hero', 'aria-label': t(s.brandName) }, h('img', { src: src(s.logoMark), alt: '' }), h('span', { text: t(s.brandName) })),
-      h('nav', { class: 'nav' }, secs.map(link)),
-      h('div', { class: 'hd-actions' }, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
+      h('nav', { class: 'nav' }, h('i', { class: 'nav-pill' }), secs.map(link)),
+      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
         h('button', { class: 'burger', 'aria-label': 'Menu' }, h('i'), h('i')))));
+    navPill();
     $('#menu').replaceChildren(...secs.map((x, i) => { const a = link(x); a.style.transitionDelay = (i * 60 + 200) + 'ms'; return a; }));
+  }
+
+  function navPill() {
+    const nav = $('.nav'); if (!nav) return; const pill = $('.nav-pill', nav);
+    const move = (a) => { if (!a) { const act = $('a.active', nav); if (!act) { pill.style.opacity = 0; return; } a = act; } const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect(); const x = lang === 'ar' ? r.right - n.right : r.left - n.left; pill.style.opacity = 1; pill.style.width = r.width + 'px'; pill.style.transform = 'translateX(' + x + 'px)'; };
+    nav.addEventListener('mouseover', (e) => { const a = e.target.closest('a'); if (a) move(a); });
+    nav.addEventListener('mouseleave', () => move());
+    nav.addEventListener('click', () => setTimeout(() => move(), 60));
+    nav._move = move; setTimeout(() => move(), 100);
   }
 
   /* ---------- mount ---------- */
@@ -322,7 +332,7 @@
       $$('.work-media img').forEach((im) => gsap.fromTo(im, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: im.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
       $$('.work-media img').forEach((im) => { im.style.height = '112%'; im.style.top = '-6%'; });
       // active nav
-      (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); } }); });
+      (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); const nv = $('.nav'); nv && nv._move && nv._move(); } }); });
       // marquee driven by scroll velocity
       const track = $('.mq-track'); if (track) {
         const w = () => track.firstChild.getBoundingClientRect().width; let x = 0, vel = 0, dir = -1;

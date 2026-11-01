@@ -1,9 +1,9 @@
 {
   "settings": {
-    "brandName": { "ar": "بشر كشكوش", "en": "Beshr Kashkoush" },
-    "siteTitle": { "ar": "بشر كشكوش — مصمم جرافيك", "en": "Beshr Kashkoush — Graphic Designer" },
+    "brandName": { "ar": "بشر قشقوش", "en": "Beshr Kashkoush" },
+    "siteTitle": { "ar": "بشر قشقوش — مصمم جرافيك", "en": "Beshr Kashkoush — Graphic Designer" },
     "description": {
-      "ar": "بشر كشكوش، مصمم جرافيك يصنع هويات بصرية وشعارات وتصاميم تحكي قصة العلامة وتبقى في الذاكرة.",
+      "ar": "بشر قشقوش، مصمم جرافيك يصنع هويات بصرية وشعارات وتصاميم تحكي قصة العلامة وتبقى في الذاكرة.",
       "en": "Beshr Kashkoush, a graphic designer crafting brand identities, logos and designs that tell a story and stay in memory."
     },
     "defaultLang": "ar",
@@ -63,7 +63,7 @@
     "eyebrow": { "ar": "من أنا", "en": "About me" },
     "title": { "ar": "أصمم بقلب فنان\nوعقل استراتيجي", "en": "Designing with an artist's heart\nand a strategist's mind" },
     "lead": {
-      "ar": "أنا بشر كشكوش، مصمم جرافيك أعمل في مختلف أنواع التصميم، من الشعارات والهويات إلى المطبوعات والمحتوى الرقمي.",
+      "ar": "أنا بشر قشقوش، مصمم جرافيك أعمل في مختلف أنواع التصميم، من الشعارات والهويات إلى المطبوعات والمحتوى الرقمي.",
       "en": "I'm Beshr Kashkoush, a graphic designer working across every kind of design — from logos and identities to print and digital content."
     },
     "body": {
