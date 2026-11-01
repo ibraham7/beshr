@@ -144,11 +144,8 @@
         h('div', { class: 'pr-track', 'aria-hidden': 'true' }, h('i', { class: 'pr-fill' }), h('i', { class: 'pr-runner' })),
         steps.map((x, i) => h('article', { class: 'pr-step rv' },
           h('span', { class: 'pr-node', 'aria-hidden': 'true' }, h('i')),
-          h('div', { class: 'pr-card' },
-            h('span', { class: 'pr-num', 'aria-hidden': 'true', text: num(i) }),
-            h('span', { class: 'pr-tag', text: num(i) + ' / ' + num(steps.length - 1) }),
-            h('h3', { text: t(x.title) }), h('p', { text: t(x.desc) }),
-            h('span', { class: 'pr-bar', 'aria-hidden': 'true' }, h('i'))))))));
+          h('span', { class: 'pr-no', text: num(i) }),
+          h('h3', { text: t(x.title) }), h('p', { text: t(x.desc) }))))));
   }
 
   function sContact(no) {
@@ -185,15 +182,15 @@
       h('div', { class: 'ct-bg', 'aria-hidden': 'true' }, h('i'), h('i')),
       h('div', { class: 'container' },
         h('div', { class: 'ct-head' },
-          h('div', {}, h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)), splitEl('h2', 'contact-big', t(d.title))),
-          t(d.cta) ? h('a', { class: 'ct-orb mag', href: '#ct-form' }, h('span', { class: 'ct-orb-ring', 'aria-hidden': 'true' }), h('span', { class: 'ct-orb-in' }, icon('arrow', 'arr'), h('b', { text: t(d.cta) }))) : null),
+          h('div', {}, h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)), splitEl('h2', 'contact-big', t(d.title)))),
         h('div', { class: 'ct-grid' },
           h('div', { class: 'ct-side' },
             h('p', { class: 'lead rv', text: t(d.subtitle) }),
             t(d.status) ? h('div', { class: 'ct-status rv' }, h('span', { class: 'pulse', 'aria-hidden': 'true' }), h('div', {}, h('b', { text: t(d.status) }), t(d.response) ? h('small', { text: t(d.response) }) : null)) : null,
             links.map(([k, v, href]) => h('a', { class: 'clink rv', href, target: href.startsWith('http') ? '_blank' : null, rel: 'noopener' }, h('span', { text: k }), h('b', { text: v }))),
             t(d.location) ? h('div', { class: 'clink rv', style: 'direction:inherit' }, h('span', { text: '◆' }), h('b', { text: t(d.location) })) : null,
-            socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null),
+            socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null,
+          t(d.cta) ? h('a', { class: 'ct-orb mag rv', href: '#ct-form' }, h('span', { class: 'ct-orb-ring', 'aria-hidden': 'true' }), h('span', { class: 'ct-orb-in' }, icon('arrow', 'arr'), h('b', { text: t(d.cta) }))) : null),
           form)),
       ticker ? h('div', { class: 'ct-ticker', 'aria-hidden': 'true' }, h('div', { class: 'ct-tk' }, tk(), tk())) : null);
   }
@@ -414,7 +411,7 @@
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     activeCat = 'all';
     // spotlight that follows the pointer inside service cards
-    if (FINE) $$('.card, .pr-card, .ct-form').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
+    if (FINE) $$('.card, .ct-form').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
     // header state
     let last = 0;
     addEventListener('scroll', () => {
