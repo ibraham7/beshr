@@ -43,7 +43,6 @@
     "cta1": { "label": { "ar": "شاهد أعمالي", "en": "View my work" }, "link": "#works" },
     "cta2": { "label": { "ar": "لنبدأ مشروعك", "en": "Start a project" }, "link": "#contact" },
     "image": "",
-    "ringText": "BESHR KASHKOUSH • GRAPHIC DESIGNER • ",
     "scroll": { "ar": "مرّر للأسفل", "en": "Scroll" }
   },
 

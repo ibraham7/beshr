@@ -67,20 +67,17 @@
 
   function sHero() {
     const d = C.hero || {}, s = C.settings || {};
-    const ring = (() => { const b = d.ringText || 'BESHR KASHKOUSH • '; return b.repeat(Math.max(1, Math.ceil(70 / b.length))); })();
-    const ringSvg = (() => { const e = svg(`<defs><path id="rp" d="M50,50 m-43,0 a43,43 0 1,1 86,0 a43,43 0 1,1 -86,0"/></defs><text><textPath href="#rp" startOffset="0">${ring.replace(/[<&]/g, '')}</textPath></text>`, 'ring-svg'); e.setAttribute('viewBox', '0 0 100 100'); e.removeAttribute('stroke'); requestAnimationFrame(() => { const tx = e.querySelector('text'); if (!tx || !tx.getNumberOfChars) return; const n = tx.getNumberOfChars(); tx.style.letterSpacing = '0'; const nat = tx.getComputedTextLength(); tx.style.letterSpacing = Math.max(0, (268 - nat) / n) + 'px'; }); return e; })();
     const layer = (z, ...k) => h('div', { class: 'layer', style: '--z:' + z + 'px' }, ...k);
-    const fl = (n, z) => layer(z, h('span', { class: 'fl-wrap f' + n }, h('i', { class: 'float' })));
+    const sq = (n, z) => layer(z, h('span', { class: 'sq-orbit s' + n }, h('i', { class: 'float' })));
     const art = h('div', { class: 'hero-art' }, h('div', { class: 'stage' },
       layer(-30, h('div', { class: 'aurora' }, h('i'), h('i'), h('i'))),
       layer(0, h('div', { class: 'hero-orb' }, h('i', { class: 'glare' }))),
       layer(30, h('div', { class: 'orbit o1' }, h('div', { class: 'orbit-spin' }))),
       layer(80, h('div', { class: 'orbit o2' }, h('div', { class: 'orbit-spin' }))),
-      layer(46, ringSvg),
       d.image ? layer(100, h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }))
         : [layer(40, h('img', { class: 'hero-mark shadow', src: src(s.logoMark), alt: '' })), layer(120, h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName) }))],
       layer(126, d.image ? null : h('i', { class: 'mark-shine', style: 'mask-image:url(' + src(s.logoMark) + ');-webkit-mask-image:url(' + src(s.logoMark) + ')' })),
-      fl(1, 175), fl(2, 70), fl(3, 205),
+      sq(1, 110), sq(2, 150), sq(3, 190), sq(4, 70),
       ((C.marquee && C.marquee.items) || []).slice(0, 3).map((it, i) => layer(150 + i * 30, h('span', { class: 'chip3d c' + (i + 1) }, h('i'), t(it.text))))));
     const btn = (b, solid) => b && t(b.label) ? h('a', { class: 'btn mag' + (solid ? ' solid' : ''), href: b.link || '#' }, t(b.label), icon('arrow', 'arr')) : null;
     return h('section', { class: 'hero', id: 'hero' },
@@ -288,6 +285,27 @@
     gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
   }
 
+  /* floating keyword chips drift to random spots around the logo */
+  function wanderChips() {
+    const chips = $('.chip3d'); if (!chips.length) return;
+    let dead = false; const tweens = [];
+    chips.forEach((chip, i) => {
+      const layer = chip.parentElement, st = { cx: chip.offsetLeft + chip.offsetWidth / 2, cy: chip.offsetTop + chip.offsetHeight / 2, x: 0, y: 0 };
+      const go = () => {
+        if (dead) return;
+        const W = layer.offsetWidth || 400; let dx = 0, dy = 0;
+        for (let k = 0; k < 12; k++) { // pick a point in the ring around the logo, not over it
+          const a = Math.random() * 6.2832, rad = W * (0.52 + Math.random() * 0.14);
+          const nx = W / 2 + Math.cos(a) * rad, ny = W / 2 + Math.sin(a) * rad * 0.92;
+          if (nx > W * -0.04 && nx < W * 1.04 && ny > W * 0.02 && ny < W * 0.98) { dx = nx - st.cx; dy = ny - st.cy; break; }
+        }
+        tweens.push(gsap.to(chip, { x: dx, y: dy, duration: 4 + Math.random() * 4, ease: 'sine.inOut', onComplete: go }));
+      };
+      gsap.delayedCall(i * 0.6, go);
+    });
+    cleanups.push(() => { dead = true; gsap.killTweensOf(chips); });
+  }
+
   /* ---------- behaviours ---------- */
   function wire() {
     const sig = { signal: ac.signal };
@@ -401,6 +419,7 @@
       $$('.work-media img').forEach((im) => gsap.fromTo(im, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: im.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
       $$('.work-media img').forEach((im) => { im.style.height = '112%'; im.style.top = '-6%'; });
       heroFX($('.hero'), { signal: ac.signal });
+      wanderChips();
       // active nav
       (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); const nv = $('.nav'); nv && nv._move && nv._move(); } }); });
       // marquee driven by scroll velocity
@@ -415,12 +434,12 @@
         $$('.card').forEach((c) => {
           const rx = gsap.quickTo(c, 'rotationX', { duration: .6, ease: 'power3' }), ry = gsap.quickTo(c, 'rotationY', { duration: .6, ease: 'power3' });
           c.style.transformPerspective = '900px';
-          c.addEventListener('mousemove', (e) => { const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; c.style.setProperty('--mx', x + 'px'); c.style.setProperty('--my', y + 'px'); ry((x / r.width - .5) * 9); rx(-(y / r.height - .5) * 9); }, sig);
+          c.addEventListener('mousemove', (e) => { const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; c.style.setProperty('--mx', x + 'px'); c.style.setProperty('--my', y + 'px'); ry((x / r.width - .5) * 4); rx(-(y / r.height - .5) * 4); }, sig);
           c.addEventListener('mouseleave', () => { rx(0); ry(0); }, sig);
         });
         $$('.mag').forEach((b) => {
           const mx = gsap.quickTo(b, 'x', { duration: .5, ease: 'power3' }), my = gsap.quickTo(b, 'y', { duration: .5, ease: 'power3' });
-          b.addEventListener('mousemove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - (r.left + r.width / 2)) * .28); my((e.clientY - (r.top + r.height / 2)) * .4); }, sig);
+          b.addEventListener('mousemove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - (r.left + r.width / 2)) * .14); my((e.clientY - (r.top + r.height / 2)) * .2); }, sig);
           b.addEventListener('mouseleave', () => { mx(0); my(0); }, sig);
         });
         // hero: interactive 3D tilt on the logo stage + spotlight
@@ -455,7 +474,7 @@
       tl.from('.hero .split-line > span', { yPercent: 120, rotate: 4, duration: 1.3, stagger: .14 })
         .from('.hero .rv', { y: 40, opacity: 0, duration: 1, stagger: .12 }, '-=.9')
         .from('.hero-art', { scale: .8, opacity: 0, duration: 1.6, ease: 'expo.out' }, '-=1.4')
-        .from('.hero .fl-wrap', { scale: 0, duration: 1, stagger: .15, ease: 'back.out(2)' }, '-=1.1')
+        .from('.hero .sq-orbit .float', { scale: 0, opacity: 0, duration: 1.2, stagger: .15, ease: 'power3.out' }, '-=1.1')
         .from('#header .hd > *', { y: -30, opacity: 0, duration: .9, stagger: .1 }, '-=1.2')
         .from('.scroll-hint', { opacity: 0, y: 20, duration: 1 }, '-=.6');
     });
