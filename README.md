@@ -29,3 +29,12 @@ node server.js        # http://localhost:3000
 | `ADMIN_PASSWORD` | كلمة المرور الأولية (تُستخدم عند أول تشغيل فقط) |
 
 المحتوى الافتراضي في `content.default.json`، وصور الأعمال التجريبية تُولَّد بـ `npm run covers`.
+
+## النشر على Render (الأسهل)
+
+1. ادخل render.com ← **New → Blueprint** واختر مستودع `ibraham7/beshr` (يقرأ `render.yaml` تلقائياً).
+2. اكتب `ADMIN_PASSWORD` (كلمة مرور قوية) عند الطلب.
+3. بعد النشر: الموقع على رابط Render، واللوحة على `/admin`. القرص الدائم (`/var/data`) يحفظ التعديلات والصور.
+4. اربط دومينك من Settings ← Custom Domains.
+
+> القرص الدائم يتطلب خطة مدفوعة (Starter). بدونه تضيع التعديلات عند كل إعادة تشغيل.
