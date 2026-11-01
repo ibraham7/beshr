@@ -67,18 +67,17 @@
 
   function sHero() {
     const d = C.hero || {}, s = C.settings || {};
-    const layer = (z, ...k) => h('div', { class: 'layer', style: '--z:' + z + 'px' }, ...k);
-    const sq = (n, z) => layer(z, h('span', { class: 'sq-orbit s' + n }, h('i', { class: 'float' })));
-    const art = h('div', { class: 'hero-art' }, h('div', { class: 'stage' },
-      layer(-30, h('div', { class: 'aurora' }, h('i'), h('i'), h('i'))),
-      layer(0, h('div', { class: 'hero-orb' }, h('i', { class: 'glare' }))),
-      layer(30, h('div', { class: 'orbit o1' }, h('div', { class: 'orbit-spin' }))),
-      layer(80, h('div', { class: 'orbit o2' }, h('div', { class: 'orbit-spin' }))),
-      d.image ? layer(100, h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }))
-        : [layer(40, h('img', { class: 'hero-mark shadow', src: src(s.logoMark), alt: '' })), layer(120, h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName) }))],
-      layer(126, d.image ? null : h('i', { class: 'mark-shine', style: 'mask-image:url(' + src(s.logoMark) + ');-webkit-mask-image:url(' + src(s.logoMark) + ')' })),
-      sq(1, 110), sq(2, 150), sq(3, 190), sq(4, 70),
-      ((C.marquee && C.marquee.items) || []).slice(0, 3).map((it, i) => layer(150 + i * 30, h('span', { class: 'chip3d c' + (i + 1) }, h('i'), t(it.text))))));
+    const L = (d, cls, ...k) => h('div', { class: 'ha-layer ' + cls, 'data-d': d }, ...k);
+    const orbitSvg = (side) => { const e = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); e.setAttribute('class', 'orbits ' + side); e.setAttribute('viewBox', '0 0 100 100'); e.setAttribute('aria-hidden', 'true'); e.innerHTML = (side === 'back' ? '<defs><radialGradient id="sqGlow"><stop offset="0" stop-opacity=".55"/><stop offset="1" stop-opacity="0"/></radialGradient></defs>' : '') + '<g class="bodies"></g>'; return e; };
+    const tags = ((C.marquee && C.marquee.items) || []).filter((it) => t(it.text)).slice(0, 3);
+    const art = h('div', { class: 'hero-art' },
+      L(6, 'glow-l', h('div', { class: 'halo' })),
+      L(12, 'orb-back', orbitSvg('back')),
+      L(9, 'core', h('div', { class: 'hero-orb' }, h('i', { class: 'glare' }))),
+      L(12, 'orb-front', orbitSvg('front')),
+      d.image ? L(18, 'core', h('img', { class: 'hero-photo', src: src(d.image), alt: t(s.brandName) }))
+        : L(18, 'core', h('img', { class: 'hero-mark', src: src(s.logoMark), alt: t(s.brandName) }), h('i', { class: 'mark-shine', style: 'mask-image:url(' + src(s.logoMark) + ');-webkit-mask-image:url(' + src(s.logoMark) + ')' })),
+      L(24, 'chips', tags.map((it) => h('span', { class: 'chip3d' }, h('span', { class: 'chip-in' }, h('i'), t(it.text))))));
     const btn = (b, solid) => b && t(b.label) ? h('a', { class: 'btn mag' + (solid ? ' solid' : ''), href: b.link || '#' }, t(b.label), icon('arrow', 'arr')) : null;
     return h('section', { class: 'hero', id: 'hero' },
       h('div', { class: 'hero-grid' }), h('div', { class: 'hero-glow' }), h('canvas', { class: 'hero-fx', 'aria-hidden': 'true' }),
@@ -131,7 +130,7 @@
     const filters = h('div', { class: 'filters rv' }, h('button', { class: 'chip on', 'data-cat': 'all', text: t(d.allLabel) || 'All' }), cats.map((c) => h('button', { class: 'chip', 'data-cat': c.id, text: t(c.name) })));
     const items = (d.items || []).map((w, i) => h('button', { class: 'work', 'data-cat': w.category, 'data-i': i, 'aria-label': t(w.title) },
       h('div', { class: 'work-media ' + (w.ratio || 'portrait') }, /\.(mp4|webm)$/i.test(w.image || '') ? h('video', { src: src(w.image), muted: true, loop: true, autoplay: true, playsinline: true }) : h('img', { src: src(w.image), alt: t(w.title), loading: 'lazy' })),
-      h('div', { class: 'work-shade' }),
+      h('div', { class: 'work-shade' }), h('span', { class: 'work-go', 'aria-hidden': 'true' }, icon('arrow')),
       h('div', { class: 'work-info' }, h('div', {}, h('h3', { text: t(w.title) }), h('span', { text: t((cats.find((c) => c.id === w.category) || {}).name) })), w.year ? h('span', { class: 'yr', text: w.year }) : null)));
     return h('section', { class: 'sec', id: 'works' }, h('div', { class: 'container' }, secHead('works', no), filters, h('div', { class: 'masonry' }, items)));
   }
@@ -195,7 +194,7 @@
     $('#header').replaceChildren(h('div', { class: 'container hd' },
       h('a', { class: 'brand', href: '#hero', 'aria-label': t(s.brandName) }, h('img', { src: src(s.logoMark), alt: '' }), h('span', { text: t(s.brandName) })),
       h('nav', { class: 'nav' }, h('i', { class: 'nav-pill' }), secs.map(link)),
-      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta mag', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang mag', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
+      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta mag', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
         h('button', { class: 'burger', 'aria-label': 'Menu' }, h('i'), h('i')))));
     navPill();
     $('#menu').replaceChildren(...secs.map((x, i) => { const a = link(x); a.style.transitionDelay = (i * 60 + 200) + 'ms'; return a; }));
@@ -203,11 +202,8 @@
 
   function navPill() {
     const nav = $('.nav'); if (!nav) return; const pill = $('.nav-pill', nav);
-    const move = (a) => { if (!a) { const act = $('a.active', nav); if (!act) { pill.style.opacity = 0; return; } a = act; } const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect(); const x = lang === 'ar' ? r.right - n.right : r.left - n.left; pill.style.opacity = 1; pill.style.width = r.width + 'px'; pill.style.transform = 'translateX(' + x + 'px)'; };
-    nav.addEventListener('mouseover', (e) => { const a = e.target.closest('a'); if (a) move(a); });
-    nav.addEventListener('mouseleave', () => move());
-    nav.addEventListener('click', () => setTimeout(() => move(), 60));
-    nav._move = move; setTimeout(() => move(), 100);
+    const move = () => { const a = $('a.active', nav); if (!a) { pill.style.opacity = 0; return; } const n = nav.getBoundingClientRect(), r = a.getBoundingClientRect(); const x = lang === 'ar' ? r.right - n.right : r.left - n.left; pill.style.opacity = 1; pill.style.width = r.width + 'px'; pill.style.transform = 'translateX(' + x + 'px)'; };
+    nav._move = move; setTimeout(move, 100); addEventListener('resize', move, { signal: ac.signal });
   }
 
   /* ---------- mount ---------- */
@@ -227,6 +223,7 @@
     }
     app.append(sFooter());
     wire();
+    orbitSys = orbitSystem();
     if (hasGSAP()) animate();
   }
 
@@ -244,7 +241,7 @@
     const size = () => {
       const r = hero.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height;
       cv.width = W * dpr; cv.height = H * dpr; cv.style.width = W + 'px'; cv.style.height = H + 'px'; ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      const n = Math.round(Math.min(70, Math.max(24, (W * H) / 22000)));
+      const n = Math.round(Math.min(70, Math.max(W < 700 ? 12 : 24, (W * H) / 22000)));
       parts = parts.filter((p) => p.life >= 0); while (parts.filter((p) => p.life < 0).length < n) parts.push(make(rand(0, W), rand(0, H)));
     };
     size();
@@ -285,25 +282,97 @@
     gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
   }
 
-  /* floating keyword chips drift to random spots around the logo */
-  function wanderChips() {
-    const chips = $('.chip3d'); if (!chips.length) return;
-    let dead = false; const tweens = [];
-    chips.forEach((chip, i) => {
-      const layer = chip.parentElement, st = { cx: chip.offsetLeft + chip.offsetWidth / 2, cy: chip.offsetTop + chip.offsetHeight / 2, x: 0, y: 0 };
-      const go = () => {
-        if (dead) return;
-        const W = layer.offsetWidth || 400; let dx = 0, dy = 0;
-        for (let k = 0; k < 12; k++) { // pick a point in the ring around the logo, not over it
-          const a = Math.random() * 6.2832, rad = W * (0.52 + Math.random() * 0.14);
-          const nx = W / 2 + Math.cos(a) * rad, ny = W / 2 + Math.sin(a) * rad * 0.92;
-          if (nx > W * -0.04 && nx < W * 1.04 && ny > W * 0.02 && ny < W * 0.98) { dx = nx - st.cx; dy = ny - st.cy; break; }
-        }
-        tweens.push(gsap.to(chip, { x: dx, y: dy, duration: 4 + Math.random() * 4, ease: 'sine.inOut', onComplete: go }));
-      };
-      gsap.delayedCall(i * 0.6, go);
+  /* ---------- hero orbit system ----------
+     Squares ride the real SVG ellipses (back half sits behind the orb, front half in front),
+     the keyword chips circle the logo on their own ellipse and stay upright, and every layer
+     drifts with the pointer at its own depth. Independent of GSAP so it survives a CDN failure. */
+  const ORBITS = [
+    { rx: 58, ry: 16, rot: -14, cls: '', w: .34, bodies: [{ p: 0, s: 3.4, trail: true }, { p: 3.3, s: 2.3, c: 'sage' }] },
+    { rx: 66, ry: 29, rot: 24, cls: 'dash', w: -.2, bodies: [{ p: 1.1, s: 2.8 }, { p: 4.4, s: 1.9, c: 'text', mobile: false }] },
+    { rx: 47, ry: 45, rot: 0, cls: 'faint', w: .46, bodies: [{ p: 2.3, s: 1.6, c: 'text', trail: true }] },
+  ];
+  let orbitSys = null;
+  function orbitSystem() {
+    const art = $('.hero-art'), hero = $('.hero'); if (!art || !hero) return null;
+    const NS = 'http://www.w3.org/2000/svg', mk = (tag, at) => { const e = document.createElementNS(NS, tag); for (const k in at) e.setAttribute(k, at[k]); return e; };
+    const back = $('.orbits.back', art), front = $('.orbits.front', art), gB = $('.bodies', back), gF = $('.bodies', front);
+    const small = matchMedia('(max-width: 700px)').matches;
+    const bodies = [];
+    ORBITS.forEach((o) => {
+      const r = o.rot * Math.PI / 180, cr = Math.cos(r), sr = Math.sin(r);
+      back.insertBefore(mk('ellipse', { class: 'path ' + o.cls, cx: 50, cy: 50, rx: o.rx, ry: o.ry, transform: 'rotate(' + o.rot + ' 50 50)' }), gB);
+      front.insertBefore(mk('path', { class: 'path ' + o.cls, d: 'M' + (50 + o.rx) + ' 50A' + o.rx + ' ' + o.ry + ' 0 0 1 ' + (50 - o.rx) + ' 50', transform: 'rotate(' + o.rot + ' 50 50)' }), gF);
+      // point on the rotated ellipse; z = sin(theta) > 0 is the half nearest the viewer
+      const at = (th) => { const lx = o.rx * Math.cos(th), ly = o.ry * Math.sin(th); return [50 + lx * cr - ly * sr, 50 + lx * sr + ly * cr, Math.sin(th)]; };
+      o.bodies.forEach((b) => {
+        if (small && b.mobile === false) return;
+        const g = mk('g', { class: 'sq ' + (b.c || '') });
+        g.append(mk('circle', { class: 'glow', r: b.s * 1.9 }), mk('rect', { x: -b.s / 2, y: -b.s / 2, width: b.s, height: b.s, rx: b.s * .24, transform: 'rotate(45)' }));
+        const ghosts = b.trail && !small ? Array.from({ length: 7 }, (_, k) => mk('circle', { class: 'ghost ' + (b.c || ''), r: (b.s * .3 * (1 - k / 8)).toFixed(2), opacity: (.4 * (1 - k / 7)).toFixed(2) })) : [];
+        bodies.push({ o, b, g, ghosts, at });
+      });
     });
-    cleanups.push(() => { dead = true; gsap.killTweensOf(chips); });
+    const put = (el, z) => { const want = z > 0 ? gF : gB; if (el.parentNode !== want) want.append(el); };
+
+    const chips = $$('.chip3d', art), layers = $$('.ha-layer', art).map((el) => ({ el, d: +el.dataset.d || 0 }));
+    const orb = $('.hero-orb', art), glow = $('.hero-glow', hero);
+    let crx = 0, cry = 0;
+    const measure = () => { // chip ellipse: outside the orb, inside the viewport, clear of the hero text
+      const W = art.offsetWidth, ar = art.getBoundingClientRect(), cx = ar.left + ar.width / 2, cy = ar.top + ar.height / 2;
+      const cw = Math.max(0, ...chips.map((c) => c.offsetWidth)) / 2, ch = Math.max(0, ...chips.map((c) => c.offsetHeight)) / 2;
+      crx = W * .5; cry = W * .57;
+      crx = Math.min(crx, cx - cw - 10, innerWidth - cx - cw - 10);
+      const tx = $('.hero-text', hero); if (tx) {
+        const tr = tx.getBoundingClientRect();
+        if (tr.top > cy) cry = Math.min(cry, tr.top - cy - ch - 10); // stacked (mobile): keep above the text
+        else if (tr.left > cx) crx = Math.min(crx, tr.left - cx - cw - 14);
+        else if (tr.right < cx) crx = Math.min(crx, cx - tr.right - cw - 14);
+      }
+      crx = Math.max(crx, W * .3); cry = Math.max(cry, W * .42);
+    };
+    measure();
+    const ro = new ResizeObserver(measure); ro.observe(hero);
+
+    let mx = 0, my = 0, px = 0, py = 0, hoverT = 1, hoverF = 1, phase = 0, cphase = 0, t = 0, visible = true, raf = 0, last = 0;
+    const api = { speed: hasGSAP() && !REDUCED && !booted ? 0 : 1, destroy() { cancelAnimationFrame(raf); ro.disconnect(); io.disconnect(); evt.abort(); } };
+    const evt = new AbortController(), on = { signal: evt.signal };
+    if (FINE) {
+      hero.addEventListener('pointermove', (e) => {
+        const r = art.getBoundingClientRect();
+        mx = Math.max(-1, Math.min(1, (e.clientX - (r.left + r.width / 2)) / (innerWidth / 2)));
+        my = Math.max(-1, Math.min(1, (e.clientY - (r.top + r.height / 2)) / (innerHeight / 2)));
+        glow && (glow.style.setProperty('--mx', e.clientX + 'px'), glow.style.setProperty('--my', e.clientY - hero.getBoundingClientRect().top + 'px'));
+      }, on);
+      hero.addEventListener('pointerleave', () => { mx = 0; my = 0; }, on);
+    }
+    chips.forEach((c) => { c.addEventListener('pointerenter', () => { hoverT = 0; }, on); c.addEventListener('pointerleave', () => { hoverT = 1; }, on); });
+    const io = new IntersectionObserver(([e]) => { visible = e.isIntersecting; if (visible && !raf && !REDUCED) raf = requestAnimationFrame(loop); }); io.observe(hero);
+
+    const draw = (dt) => {
+      phase += dt * api.speed; hoverF += (hoverT - hoverF) * Math.min(1, dt * 5); cphase += dt * .085 * api.speed * hoverF; t += dt;
+      for (const B of bodies) {
+        const th = B.b.p + B.o.w * phase, [x, y, z] = B.at(th);
+        B.g.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ') scale(' + (.78 + .22 * z).toFixed(3) + ')'); put(B.g, z);
+        B.ghosts.forEach((gh, i) => { const [gx, gy, gz] = B.at(th - Math.sign(B.o.w) * (i + 1) * .05); gh.setAttribute('cx', gx.toFixed(2)); gh.setAttribute('cy', gy.toFixed(2)); put(gh, gz); });
+      }
+      chips.forEach((c, i) => {
+        const a = -2.3 + i * (Math.PI * 2 / chips.length) + cphase, bob = Math.sin(t * 1.2 + i * 2.1) * 5;
+        c.style.transform = 'translate(-50%, -50%) translate3d(' + (Math.cos(a) * crx).toFixed(1) + 'px,' + (Math.sin(a) * cry + bob).toFixed(1) + 'px,0)';
+      });
+      px += (mx - px) * Math.min(1, dt * 3.2); py += (my - py) * Math.min(1, dt * 3.2);
+      const fy = REDUCED ? 0 : Math.sin(t * .7) * 6; // gentle float of the whole system
+      layers.forEach((l) => { l.el.style.transform = 'translate3d(' + (px * l.d).toFixed(2) + 'px,' + (py * l.d + fy * (l.d / 12)).toFixed(2) + 'px,0)'; });
+      if (orb) { orb.style.setProperty('--gx', (32 + px * 30).toFixed(1) + '%'); orb.style.setProperty('--gy', (24 + py * 30).toFixed(1) + '%'); }
+    };
+    function loop(now) {
+      if (!visible) { raf = 0; last = 0; return; }
+      const dt = last ? Math.min(.05, (now - last) / 1000) : 0; last = now;
+      draw(dt); raf = requestAnimationFrame(loop);
+    }
+    draw(0);
+    if (!REDUCED) raf = requestAnimationFrame(loop);
+    cleanups.push(() => api.destroy());
+    return api;
   }
 
   /* ---------- behaviours ---------- */
@@ -321,10 +390,8 @@
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     activeCat = 'all';
-    // hover origin for fill effects
-    const HOV = '.btn, .hd-cta, .chip, .lang, .clink, .round, .to-top';
-    document.addEventListener('pointerover', (e) => { const el = e.target.closest(HOV); if (!el) return; const r = el.getBoundingClientRect(); el.style.setProperty('--x', (e.clientX - r.left) + 'px'); el.style.setProperty('--y', (e.clientY - r.top) + 'px'); }, sig);
-    document.addEventListener('pointerout', (e) => { const el = e.target.closest(HOV); if (!el || el.contains(e.relatedTarget)) return; const r = el.getBoundingClientRect(); el.style.setProperty('--x', (e.clientX - r.left) + 'px'); el.style.setProperty('--y', (e.clientY - r.top) + 'px'); }, sig);
+    // spotlight that follows the pointer inside service cards
+    if (FINE) $$('.card').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
     // header state
     let last = 0;
     addEventListener('scroll', () => {
@@ -336,7 +403,7 @@
       document.addEventListener('mouseover', (e) => {
         const cur = $('.cursor'); const w = e.target.closest('.work');
         cur.classList.toggle('view', !!w); if (w) $('.c-ring span').textContent = t((C.works || {}).viewLabel) || 'View';
-        cur.classList.toggle('hover', !w && !!e.target.closest('a, button, .chip, .card, input, textarea, select'));
+        cur.classList.toggle('hover', !w && !!e.target.closest('a, button, .chip, .chip3d, .card, input, textarea, select'));
       }, sig);
     }
   }
@@ -349,7 +416,7 @@
     if (!hasGSAP()) { all.forEach((w) => w.classList.toggle('out', !show.includes(w))); return; }
     gsap.to(all, { opacity: 0, scale: .94, duration: .25, ease: 'power2.in', onComplete: () => {
       all.forEach((w) => w.classList.toggle('out', !show.includes(w)));
-      gsap.fromTo(show, { opacity: 0, y: 40, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: .8, stagger: .07, ease: 'power3.out', clearProps: 'transform', onComplete: () => window.ScrollTrigger && ScrollTrigger.refresh() });
+      gsap.fromTo(show, { opacity: 0, y: 40, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: .8, stagger: .07, ease: 'power3.out', clearProps: 'transform,translate,rotate,scale', onComplete: () => window.ScrollTrigger && ScrollTrigger.refresh() });
     } });
   }
 
@@ -391,11 +458,10 @@
         if (el.closest('.hero')) return;
         gsap.from($$('.split-line > span', el), { yPercent: 118, rotate: 3, duration: 1.15, stagger: .13, ease: 'power4.out', scrollTrigger: { trigger: el, start: 'top 88%', once: true } });
       });
-      // generic reveals
-      $$('.rv').forEach((el) => {
-        if (el.closest('.hero')) return;
-        gsap.from(el, { y: 56, opacity: 0, duration: 1.1, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 90%', once: true } });
-      });
+      // section reveals: fade + rise, staggered for elements entering together (card rows, stats...)
+      const rvs = $$('.rv, .work').filter((el) => !el.closest('.hero'));
+      gsap.set(rvs, { y: 44, opacity: 0 });
+      ScrollTrigger.batch(rvs, { start: 'top 90%', once: true, onEnter: (batch) => gsap.to(batch, { y: 0, opacity: 1, duration: 1, ease: 'power3.out', stagger: .09, overwrite: true, clearProps: 'transform,translate,rotate,scale,opacity' }) });
       // counters
       $$('[data-count]').forEach((el) => {
         const m = /^(\D*)(\d+(?:\.\d+)?)(.*)$/.exec(el.dataset.count); if (!m) return;
@@ -419,7 +485,6 @@
       $$('.work-media img').forEach((im) => gsap.fromTo(im, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: im.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
       $$('.work-media img').forEach((im) => { im.style.height = '112%'; im.style.top = '-6%'; });
       heroFX($('.hero'), { signal: ac.signal });
-      wanderChips();
       // active nav
       (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); const nv = $('.nav'); nv && nv._move && nv._move(); } }); });
       // marquee driven by scroll velocity
@@ -429,38 +494,14 @@
         const tick = (time, dt) => { const gw = w(); if (!gw) return; const boost = Math.min(Math.abs(vel) / 160, 14); x += dir * (1.1 + boost) * (dt / 16.6); if (x <= -gw) x += gw; if (x > 0) x -= gw; track.style.transform = `translate3d(${x}px,0,0)`; vel *= .9; };
         gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
       }
-      // card tilt + glow, magnetic
+      // magnetic pull on the primary buttons only
       if (FINE) {
-        $$('.card').forEach((c) => {
-          const rx = gsap.quickTo(c, 'rotationX', { duration: .6, ease: 'power3' }), ry = gsap.quickTo(c, 'rotationY', { duration: .6, ease: 'power3' });
-          c.style.transformPerspective = '900px';
-          c.addEventListener('mousemove', (e) => { const r = c.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top; c.style.setProperty('--mx', x + 'px'); c.style.setProperty('--my', y + 'px'); ry((x / r.width - .5) * 4); rx(-(y / r.height - .5) * 4); }, sig);
-          c.addEventListener('mouseleave', () => { rx(0); ry(0); }, sig);
-        });
         $$('.mag').forEach((b) => {
-          const mx = gsap.quickTo(b, 'x', { duration: .5, ease: 'power3' }), my = gsap.quickTo(b, 'y', { duration: .5, ease: 'power3' });
-          b.addEventListener('mousemove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - (r.left + r.width / 2)) * .14); my((e.clientY - (r.top + r.height / 2)) * .2); }, sig);
-          b.addEventListener('mouseleave', () => { mx(0); my(0); }, sig);
+          const mx = gsap.quickTo(b, 'x', { duration: .6, ease: 'power3' }), my = gsap.quickTo(b, 'y', { duration: .6, ease: 'power3' }), sc = gsap.quickTo(b, 'scale', { duration: .5, ease: 'power3' });
+          b.addEventListener('pointerenter', () => sc(1.03), sig);
+          b.addEventListener('pointermove', (e) => { const r = b.getBoundingClientRect(); mx((e.clientX - (r.left + r.width / 2)) * .18); my((e.clientY - (r.top + r.height / 2)) * .26); }, sig);
+          b.addEventListener('pointerleave', () => { mx(0); my(0); sc(1); }, sig);
         });
-        // hero: interactive 3D tilt on the logo stage + spotlight
-        const hero = $('.hero'), stage = $('.stage'), art = $('.hero-art'), orb = $('.hero-orb'), glow = $('.hero-glow');
-        if (hero && stage) {
-          let tx = 0, ty = 0, cx = 0, cy = 0, on = false;
-          hero.addEventListener('pointermove', (e) => {
-            const r = art.getBoundingClientRect();
-            tx = Math.max(-1, Math.min(1, ((e.clientX - (r.left + r.width / 2)) / innerWidth) * 2.4));
-            ty = Math.max(-1, Math.min(1, ((e.clientY - (r.top + r.height / 2)) / innerHeight) * 2.4)); on = true;
-            glow.style.setProperty('--mx', e.clientX + 'px'); glow.style.setProperty('--my', e.clientY + 'px');
-          }, sig);
-          hero.addEventListener('pointerleave', () => { on = false; }, sig);
-          const tick = (time) => {
-            const gx = on ? tx : Math.sin(time * .6) * .4, gy = on ? ty : Math.cos(time * .45) * .28;
-            cx += (gx - cx) * .07; cy += (gy - cy) * .07;
-            stage.style.transform = 'rotateX(' + (-cy * 17).toFixed(2) + 'deg) rotateY(' + (cx * 24).toFixed(2) + 'deg)';
-            orb.style.setProperty('--gx', (32 + cx * 38) + '%'); orb.style.setProperty('--gy', (24 + cy * 38) + '%');
-          };
-          gsap.ticker.add(tick); cleanups.push(() => gsap.ticker.remove(tick));
-        }
       }
     });
   }
@@ -470,13 +511,19 @@
     if (!hasGSAP() || REDUCED) return;
     const { gsap } = window;
     gsap.context(() => {
-      const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
-      tl.from('.hero .split-line > span', { yPercent: 120, rotate: 4, duration: 1.3, stagger: .14 })
-        .from('.hero .rv', { y: 40, opacity: 0, duration: 1, stagger: .12 }, '-=.9')
-        .from('.hero-art', { scale: .8, opacity: 0, duration: 1.6, ease: 'expo.out' }, '-=1.4')
-        .from('.hero .sq-orbit .float', { scale: 0, opacity: 0, duration: 1.2, stagger: .15, ease: 'power3.out' }, '-=1.1')
-        .from('#header .hd > *', { y: -30, opacity: 0, duration: .9, stagger: .1 }, '-=1.2')
-        .from('.scroll-hint', { opacity: 0, y: 20, duration: 1 }, '-=.6');
+      const tl = gsap.timeline({ defaults: { ease: 'power3.out' } });
+      tl.from('.hero-grid, .hero-glow, .hero-fx', { opacity: 0, duration: 1.4, ease: 'power1.out' }, 0)
+        .from('#header .hd > *', { y: -24, opacity: 0, duration: .9, stagger: .08 }, .15)
+        .from('.hero .eyebrow', { y: 18, opacity: 0, duration: .8 }, .2)
+        .from('.hero .split-line > span', { yPercent: 115, duration: 1.2, stagger: .12, ease: 'power4.out' }, .3)
+        .from('.hero .lead', { y: 22, opacity: 0, duration: 1 }, .75)
+        .from('.hero-cta > *', { y: 22, opacity: 0, duration: .9, stagger: .12 }, .95)
+        .from('.hero-art .halo', { opacity: 0, duration: 1.6 }, .45)
+        .from('.hero-art .hero-orb, .hero-art .hero-mark, .hero-art .hero-photo', { scale: .84, opacity: 0, duration: 1.5, stagger: .15, ease: 'expo.out' }, .55)
+        .from('.hero-art .orbits', { opacity: 0, duration: 1.4, ease: 'power2.out' }, 1.05)
+        .add(() => { if (orbitSys) gsap.to(orbitSys, { speed: 1, duration: 2.6, ease: 'power2.inOut' }); }, 1.05)
+        .from('.hero-art .chip-in', { opacity: 0, y: 14, scale: .85, duration: .9, stagger: .18, ease: 'back.out(1.6)' }, 1.5)
+        .from('.scroll-hint', { opacity: 0, y: 16, duration: 1 }, 1.7);
     });
   }
 
