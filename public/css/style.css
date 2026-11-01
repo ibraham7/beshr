@@ -20,6 +20,7 @@ html { scroll-behavior: auto; -webkit-text-size-adjust: 100%; }
 html.lenis, html.lenis body { height: auto; }
 .lenis.lenis-smooth { scroll-behavior: auto !important; }
 .lenis.lenis-stopped { overflow: hidden; }
+body::before { content: ""; position: fixed; inset: 0; z-index: -1; pointer-events: none; background: radial-gradient(900px circle at 10% 90%, color-mix(in srgb, var(--c-primary) 50%, transparent), transparent 60%), radial-gradient(800px circle at 88% 12%, color-mix(in srgb, var(--c-primary) 34%, transparent), transparent 62%); }
 body { background: var(--c-bg); color: var(--c-text); font-family: var(--f-body); font-size: 17px; line-height: 1.7; overflow-x: hidden; -webkit-font-smoothing: antialiased; }
 body.loading { overflow: hidden; }
 img, video, svg { display: block; max-width: 100%; }
@@ -120,10 +121,10 @@ html[lang=en] .h2 { letter-spacing: -.035em; line-height: 1.02; }
 /* ============ hero ============ */
 .hero { min-height: min(100svh, 860px); display: grid; align-items: center; padding-top: 112px; padding-bottom: 64px; overflow: clip; }
 .hero-glow { position: absolute; inset: 0; pointer-events: none; background:
-  radial-gradient(600px circle at var(--mx, 70%) var(--my, 40%), color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 60%),
-  radial-gradient(900px circle at 10% 90%, color-mix(in srgb, var(--c-primary) 50%, transparent), transparent 60%); }
+  radial-gradient(600px circle at var(--mx, 70%) var(--my, 40%), color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 60%);
+  mask-image: linear-gradient(#000 70%, transparent); -webkit-mask-image: linear-gradient(#000 70%, transparent); }
 .hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .5; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 90px 90px; mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%); }
-.hero-fx { position: absolute; inset: 0; pointer-events: none; }
+.hero-fx { position: absolute; inset: 0; pointer-events: none; mask-image: linear-gradient(#000 65%, transparent); -webkit-mask-image: linear-gradient(#000 65%, transparent); }
 .hero h1 .w { display: inline-block; transition: translate .6s var(--soft); }
 .hero-in { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 5vw, 80px); align-items: center; }
 .hero h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(38px, 5.4vw, 84px); line-height: 1.12; letter-spacing: -.01em; margin-bottom: 24px; }
@@ -281,7 +282,7 @@ html[lang=en] .hero h1 { font-size: clamp(38px, 5vw, 76px); letter-spacing: -.04
 }
 
 /* ============ contact ============ */
-.contact { position: relative; overflow: clip; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--c-primary) 30%, var(--c-bg))); }
+.contact { position: relative; overflow: clip; }
 .ct-bg { position: absolute; inset: 0; pointer-events: none; }
 .ct-bg i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; will-change: transform; }
 .ct-bg i:first-child { top: -20%; inset-inline-end: -20%; background: radial-gradient(circle, color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 62%); animation: ctdrift 16s ease-in-out infinite alternate; }
