@@ -138,9 +138,17 @@
   }
 
   function sProcess(no) {
-    const d = C.process || {};
-    return h('section', { class: 'sec', id: 'process' }, h('div', { class: 'container' }, secHead('process', no),
-      h('div', { class: 'steps' }, h('i', { class: 'line' }), (d.steps || []).map((x, i) => h('div', { class: 'step rv' }, h('span', { class: 'dot', text: num(i) }), h('h3', { text: t(x.title) }), h('p', { text: t(x.desc) }))))));
+    const d = C.process || {}, steps = d.steps || [];
+    return h('section', { class: 'sec process', id: 'process' }, h('div', { class: 'container' }, secHead('process', no),
+      h('div', { class: 'pr', style: '--n:' + Math.max(1, steps.length) },
+        h('div', { class: 'pr-track', 'aria-hidden': 'true' }, h('i', { class: 'pr-fill' }), h('i', { class: 'pr-runner' })),
+        steps.map((x, i) => h('article', { class: 'pr-step rv' },
+          h('span', { class: 'pr-node', 'aria-hidden': 'true' }, h('i')),
+          h('div', { class: 'pr-card' },
+            h('span', { class: 'pr-num', 'aria-hidden': 'true', text: num(i) }),
+            h('span', { class: 'pr-tag', text: num(i) + ' / ' + num(steps.length - 1) }),
+            h('h3', { text: t(x.title) }), h('p', { text: t(x.desc) }),
+            h('span', { class: 'pr-bar', 'aria-hidden': 'true' }, h('i'))))))));
   }
 
   function sContact(no) {
@@ -150,32 +158,44 @@
     if (d.phone) links.push(['Phone', d.phone, 'tel:' + d.phone.replace(/\s/g, '')]);
     if (d.whatsapp) links.push(['WhatsApp', d.whatsapp, 'https://wa.me/' + d.whatsapp.replace(/\D/g, '')]);
     const socials = (d.socials || []).filter((s) => s.url);
-    const services = ((C.services && C.services.items) || []).map((x) => t(x.title));
+    const services = ((C.services && C.services.items) || []).map((x) => t(x.title)).filter(Boolean);
     const msg = h('div', { class: 'form-msg', role: 'status' });
     const fld = (tag, name, label, extra = {}) => h('div', { class: 'fld' }, h(tag, { name, placeholder: ' ', ...extra }), h('label', { text: label }));
-    const sel = h('div', { class: 'fld' }, h('select', { name: 'service' }, h('option', { value: '' }, ''), services.map((s) => h('option', { value: s, text: s }))), h('label', { text: t(f.service) }));
-    const form = h('form', { class: 'form rv', novalidate: true },
-      fld('input', 'name', t(f.name), { required: true, autocomplete: 'name' }), fld('input', 'contact', t(f.contact), { autocomplete: 'email' }), services.length ? sel : null,
-      fld('textarea', 'message', t(f.message), { required: true, rows: 5 }),
+    const send = h('button', { class: 'btn solid mag ct-send', type: 'submit' }, h('span', { class: 'ct-send-t', text: t(f.send) }), icon('arrow', 'arr'));
+    const form = h('form', { class: 'ct-form rv', id: 'ct-form', novalidate: true },
+      h('div', { class: 'ct-row' }, fld('input', 'name', t(f.name), { required: true, autocomplete: 'name' }), fld('input', 'contact', t(f.contact), { autocomplete: 'email' })),
+      services.length ? h('fieldset', { class: 'ct-opts' }, h('legend', { text: t(f.service) }),
+        services.map((s) => h('label', { class: 'ct-opt' }, h('input', { type: 'radio', name: 'service', value: s }), h('span', { text: s })))) : null,
+      fld('textarea', 'message', t(f.message), { required: true, rows: 4 }),
       h('input', { class: 'hp', name: 'website', tabindex: '-1', autocomplete: 'off', 'aria-hidden': 'true' }),
-      h('button', { class: 'btn solid mag', type: 'submit' }, t(f.send), icon('arrow', 'arr')), msg);
+      send, msg);
     form.addEventListener('submit', async (e) => {
-      e.preventDefault(); const data = Object.fromEntries(new FormData(form));
-      if (!data.name.trim() || !data.message.trim()) { msg.className = 'form-msg bad'; msg.textContent = t(f.fail); return; }
+      e.preventDefault(); const data = Object.fromEntries(new FormData(form)); data.service = data.service || '';
+      if (!String(data.name || '').trim() || !String(data.message || '').trim()) { msg.className = 'form-msg bad'; msg.textContent = t(f.fail); form.classList.add('shake'); setTimeout(() => form.classList.remove('shake'), 600); return; }
+      send.classList.add('busy');
       try {
         if (!IS_PREVIEW) { const r = await fetch('/api/messages', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) }); if (!r.ok) throw 0; }
-        msg.className = 'form-msg ok'; msg.textContent = t(f.ok); form.reset();
+        msg.className = 'form-msg ok'; msg.textContent = t(f.ok); form.reset(); send.classList.add('sent'); setTimeout(() => send.classList.remove('sent'), 3200);
       } catch { msg.className = 'form-msg bad'; msg.textContent = t(f.fail); }
+      send.classList.remove('busy');
     });
-    return h('section', { class: 'sec contact', id: 'contact' }, h('div', { class: 'container' },
-      h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)),
-      splitEl('h2', 'contact-big', t(d.title)),
-      h('div', { class: 'contact-grid' },
-        h('div', { class: 'contact-list' }, h('p', { class: 'rv', text: t(d.subtitle) }),
-          links.map(([k, v, href]) => h('a', { class: 'clink rv', href, target: href.startsWith('http') ? '_blank' : null, rel: 'noopener' }, h('span', { text: k }), h('b', { text: v }))),
-          t(d.location) ? h('div', { class: 'clink rv', style: 'direction:inherit' }, h('span', { text: '◆' }), h('b', { text: t(d.location) })) : null,
-          socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null),
-        form)));
+    const ticker = t(d.ticker) || t(d.cta);
+    const tk = () => h('div', { class: 'ct-tk-g' }, [0, 1, 2].map(() => h('span', {}, ticker, h('i'))));
+    return h('section', { class: 'sec contact', id: 'contact' },
+      h('div', { class: 'ct-bg', 'aria-hidden': 'true' }, h('i'), h('i')),
+      h('div', { class: 'container' },
+        h('div', { class: 'ct-head' },
+          h('div', {}, h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)), splitEl('h2', 'contact-big', t(d.title))),
+          t(d.cta) ? h('a', { class: 'ct-orb mag', href: '#ct-form' }, h('span', { class: 'ct-orb-ring', 'aria-hidden': 'true' }), h('span', { class: 'ct-orb-in' }, icon('arrow', 'arr'), h('b', { text: t(d.cta) }))) : null),
+        h('div', { class: 'ct-grid' },
+          h('div', { class: 'ct-side' },
+            h('p', { class: 'lead rv', text: t(d.subtitle) }),
+            t(d.status) ? h('div', { class: 'ct-status rv' }, h('span', { class: 'pulse', 'aria-hidden': 'true' }), h('div', {}, h('b', { text: t(d.status) }), t(d.response) ? h('small', { text: t(d.response) }) : null)) : null,
+            links.map(([k, v, href]) => h('a', { class: 'clink rv', href, target: href.startsWith('http') ? '_blank' : null, rel: 'noopener' }, h('span', { text: k }), h('b', { text: v }))),
+            t(d.location) ? h('div', { class: 'clink rv', style: 'direction:inherit' }, h('span', { text: '◆' }), h('b', { text: t(d.location) })) : null,
+            socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null),
+          form)),
+      ticker ? h('div', { class: 'ct-ticker', 'aria-hidden': 'true' }, h('div', { class: 'ct-tk' }, tk(), tk())) : null);
   }
 
   function sFooter() {
@@ -390,10 +410,11 @@
     burger && burger.addEventListener('click', () => { const open = !menu.classList.contains('open'); menu.classList.toggle('open', open); burger.classList.toggle('open', open); open ? lenis && lenis.stop() : lenis && lenis.start(); });
     // filters
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
+    $('.ct-orb') && $('.ct-orb').addEventListener('click', () => setTimeout(() => { const n = $('#ct-form input[name=name]'); n && n.focus({ preventScroll: true }); }, 1200), sig);
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     activeCat = 'all';
     // spotlight that follows the pointer inside service cards
-    if (FINE) $$('.card').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
+    if (FINE) $$('.card, .pr-card, .ct-form').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
     // header state
     let last = 0;
     addEventListener('scroll', () => {
@@ -478,8 +499,14 @@
         const im = $('img.fill', ph); im && gsap.to(im, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: ph, start: 'top bottom', end: 'bottom top', scrub: true } });
         gsap.from($('.badge'), { scale: 0, rotate: -12, duration: 1, ease: 'back.out(1.8)', scrollTrigger: { trigger: ph, start: 'top 60%', once: true } });
       }
-      // process line
-      const line = $('.steps .line'); line && gsap.to(line, { scaleX: 1, ease: 'none', scrollTrigger: { trigger: '.steps', start: 'top 75%', end: 'bottom 60%', scrub: .6 } });
+      // process: one scrubbed progress value drives the track fill, the runner and the lit steps
+      const pr = $('.pr'); if (pr) {
+        const steps = $$('.pr-step', pr), n = steps.length, o = { p: 0 };
+        const apply = () => { pr.style.setProperty('--p', o.p.toFixed(4)); steps.forEach((s, i) => s.classList.toggle('on', o.p >= (n > 1 ? i / (n - 1) : 0) - .02)); };
+        gsap.to(o, { p: 1, ease: 'none', onUpdate: apply, scrollTrigger: { trigger: pr, start: 'top 72%', end: 'bottom 55%', scrub: .7 } });
+      }
+      // contact: soft parallax on the background glows
+      $$('.ct-bg i').forEach((b, i) => gsap.to(b, { yPercent: i ? -30 : 30, ease: 'none', scrollTrigger: { trigger: '.contact', start: 'top bottom', end: 'bottom top', scrub: true } }));
       // hero parallax on scroll
       if ($('.hero-art')) gsap.to('.hero-art', { yPercent: 14, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
       if ($('.hero-text')) gsap.to('.hero-text', { yPercent: -8, opacity: .2, ease: 'none', scrollTrigger: { trigger: '.hero', start: '55% top', end: 'bottom top', scrub: true } });
