@@ -25,7 +25,7 @@
 
   "sections": [
     { "id": "hero", "visible": true, "nav": { "ar": "الرئيسية", "en": "Home" } },
-    { "id": "marquee", "visible": true, "nav": { "ar": "", "en": "" } },
+    { "id": "marquee", "visible": false, "nav": { "ar": "", "en": "" } },
     { "id": "about", "visible": true, "nav": { "ar": "من أنا", "en": "About" } },
     { "id": "services", "visible": true, "nav": { "ar": "الخدمات", "en": "Services" } },
     { "id": "works", "visible": true, "nav": { "ar": "الأعمال", "en": "Work" } },
@@ -140,7 +140,6 @@
     "cta": { "ar": "ابدأ مشروعك", "en": "Start a project" },
     "status": { "ar": "متاح لاستقبال مشاريع جديدة", "en": "Available for new projects" },
     "response": { "ar": "عادةً أرد خلال 24 ساعة", "en": "I usually reply within 24 hours" },
-    "ticker": { "ar": "لنصنع شيئاً استثنائياً", "en": "Let's create something exceptional" },
     "email": "",
     "phone": "",
     "whatsapp": "",

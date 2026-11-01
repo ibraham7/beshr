@@ -176,8 +176,6 @@
       } catch { msg.className = 'form-msg bad'; msg.textContent = t(f.fail); }
       send.classList.remove('busy');
     });
-    const ticker = t(d.ticker) || t(d.cta);
-    const tk = () => h('div', { class: 'ct-tk-g' }, [0, 1, 2].map(() => h('span', {}, ticker, h('i'))));
     return h('section', { class: 'sec contact', id: 'contact' },
       h('div', { class: 'ct-bg', 'aria-hidden': 'true' }, h('i'), h('i')),
       h('div', { class: 'container' },
@@ -191,8 +189,7 @@
             t(d.location) ? h('div', { class: 'clink rv', style: 'direction:inherit' }, h('span', { text: '◆' }), h('b', { text: t(d.location) })) : null,
             socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null,
           t(d.cta) ? h('a', { class: 'ct-orb mag rv', href: '#ct-form' }, h('span', { class: 'ct-orb-ring', 'aria-hidden': 'true' }), h('span', { class: 'ct-orb-in' }, icon('arrow', 'arr'), h('b', { text: t(d.cta) }))) : null),
-          form)),
-      ticker ? h('div', { class: 'ct-ticker', 'aria-hidden': 'true' }, h('div', { class: 'ct-tk' }, tk(), tk())) : null);
+          form)));
   }
 
   function sFooter() {

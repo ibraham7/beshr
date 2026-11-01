@@ -281,7 +281,7 @@ html[lang=en] .hero h1 { font-size: clamp(38px, 5vw, 76px); letter-spacing: -.04
 }
 
 /* ============ contact ============ */
-.contact { position: relative; overflow: clip; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--c-primary) 30%, var(--c-bg))); padding-bottom: 0; }
+.contact { position: relative; overflow: clip; background: linear-gradient(180deg, transparent, color-mix(in srgb, var(--c-primary) 30%, var(--c-bg))); }
 .ct-bg { position: absolute; inset: 0; pointer-events: none; }
 .ct-bg i { position: absolute; width: 60vmax; height: 60vmax; border-radius: 50%; will-change: transform; }
 .ct-bg i:first-child { top: -20%; inset-inline-end: -20%; background: radial-gradient(circle, color-mix(in srgb, var(--c-accent) 14%, transparent), transparent 62%); animation: ctdrift 16s ease-in-out infinite alternate; }
@@ -341,12 +341,6 @@ html[lang=en] .contact-big { letter-spacing: -.045em; line-height: 1; }
 .hp { position: absolute; left: -9999px; }
 .form-msg { min-height: 24px; font-size: 15px; text-align: center; }
 .form-msg.ok { color: var(--c-accent); } .form-msg.bad { color: #ff9b9b; }
-.ct-ticker { position: relative; margin-top: clamp(70px, 9vw, 130px); padding-block: 26px; border-top: 1px solid var(--line); overflow: hidden; direction: ltr; }
-.ct-tk { display: flex; width: max-content; animation: tick 34s linear infinite; }
-.ct-tk-g { display: flex; flex: none; }
-.ct-tk-g span { display: flex; align-items: center; gap: .45em; padding-inline-end: .45em; font-family: var(--f-display); font-weight: 700; font-size: clamp(48px, 9vw, 140px); line-height: 1.15; white-space: nowrap; color: transparent; -webkit-text-stroke: 1.5px color-mix(in srgb, var(--c-accent) 55%, transparent); transition: color .6s var(--soft); }
-.ct-tk-g span i { width: .26em; height: .26em; border-radius: 22%; rotate: 45deg; background: var(--c-accent); }
-@keyframes tick { to { transform: translateX(-50%); } }
 @media (hover: hover) and (pointer: fine) {
   .ct-orb:hover { box-shadow: 0 20px 60px -14px color-mix(in srgb, var(--c-accent) 70%, transparent); }
   .ct-orb:hover .ct-orb-in svg { transform: translateX(5px); } [dir=rtl] .ct-orb:hover .ct-orb-in svg { transform: scaleX(-1) translateX(5px); }
@@ -354,8 +348,6 @@ html[lang=en] .contact-big { letter-spacing: -.045em; line-height: 1; }
   .ct-opt:hover span { color: var(--c-text); border-color: color-mix(in srgb, var(--c-accent) 55%, transparent); }
   .ct-opt:hover input:checked + span { color: var(--c-bg); }
   .fld:hover input, .fld:hover textarea { border-color: color-mix(in srgb, var(--c-accent) 45%, transparent); }
-  .ct-ticker:hover .ct-tk { animation-play-state: paused; }
-  .ct-tk-g span:hover { color: color-mix(in srgb, var(--c-accent) 85%, transparent); }
 }
 @media (max-width: 880px) {
   .ct-grid { grid-template-columns: 1fr; }
