@@ -57,13 +57,13 @@
 
   const TABS = [
     { id: 'general', label: 'الإعدادات العامة', ico: '⚙', root: 'settings', sec: 'hero', sub: 'اسم الموقع، الشعارات، الألوان واللغة.', fields: [
-      G(null, 'الهوية', [I('brandName', 'الاسم'), I('siteTitle', 'عنوان الصفحة (SEO)'), IA('description', 'وصف الموقع (SEO)'), S('defaultLang', 'اللغة الافتراضية', [['ar', 'العربية'], ['en', 'English']]), B('showLangSwitch', 'إظهار زر تبديل اللغة')]),
-      G(null, 'الشعارات', [IMG('logoMark', 'رمز الشعار (الهيدر والتحميل والصفحة الرئيسية)', { hint: 'يفضّل PNG شفاف، فاتح اللون لأن خلفية الموقع داكنة.' }), IMG('logoFull', 'الشعار الكامل (الفوتر)'), IMG('favicon', 'أيقونة المتصفح'), IMG('ogImage', 'صورة المشاركة (روابط السوشيال)')]),
+      G(null, 'الهوية', [I('brandName', 'الاسم'), I('siteTitle', 'عنوان الصفحة (SEO)'), IA('description', 'وصف الموقع (SEO)'), S('defaultLang', 'اللغة الافتراضية', [['ar', 'العربية'], ['en', 'English']]), B('showLangSwitch', 'إظهار زر تبديل اللغة'), B('showThemeSwitch', 'إظهار زر الوضع الليلي / النهاري')]),
+      G(null, 'الشعارات', [IMG('logoMark', 'رمز الشعار (الهيدر والتحميل والصفحة الرئيسية)', { hint: 'يفضّل PNG شفاف، فاتح اللون لأن خلفية الموقع داكنة.' }), IMG('logoMarkOnLight', 'رمز الشعار للوضع النهاري', { hint: 'نسخة داكنة تظهر على الخلفية الفاتحة.' }), IMG('logoOnLight', 'الشعار الكامل للوضع النهاري (الفوتر)'), IMG('logoFull', 'الشعار الكامل (الفوتر)'), IMG('favicon', 'أيقونة المتصفح'), IMG('ogImage', 'صورة المشاركة (روابط السوشيال)')]),
       { t: 'colors', k: 'colors', l: 'ألوان الموقع' }] },
     { id: 'sections', label: 'ترتيب الأقسام', ico: '☰', sec: 'hero', sub: 'أظهر/أخفِ الأقسام، غيّر ترتيبها، وعدّل أسماءها في القائمة.', custom: 'sections' },
     { id: 'hero', label: 'الواجهة الرئيسية', ico: '◆', root: 'hero', sec: 'hero', fields: [I('eyebrow', 'العبارة الصغيرة'), IA('title', 'العنوان الكبير', { hint: 'كل سطر في سطر جديد — السطر الأخير يظهر بلون مميز.', rows: 4 }), IA('subtitle', 'الوصف'), CTA('cta1', 'الزر الأول'), CTA('cta2', 'الزر الثاني'), IMG('image', 'صورة شخصية (اختياري)', { hint: 'إن تُركت فارغة يظهر رمز الشعار.' }), I('scroll', 'نص "مرّر للأسفل"')] },
     { id: 'marquee', label: 'الشريط المتحرك', ico: '↔', root: 'marquee', sec: 'marquee', fields: [L('items', 'العبارات', [I('text', 'النص')], (it) => tr(it.text))] },
-    { id: 'about', label: 'من أنا', ico: '☺', root: 'about', sec: 'about', fields: [I('eyebrow', 'العبارة الصغيرة'), IA('title', 'العنوان', { rows: 3 }), IA('lead', 'المقدمة'), IA('body', 'النبذة الكاملة', { rows: 5 }), IMG('photo', 'صورتك الشخصية', { hint: 'نسبة 4:5 مناسبة. إن تُركت فارغة يظهر الشعار.' }),
+    { id: 'about', label: 'من أنا', ico: '☺', root: 'about', sec: 'about', fields: [I('eyebrow', 'العبارة الصغيرة'), IA('title', 'العنوان', { rows: 3 }), IA('lead', 'المقدمة'), IA('body', 'النبذة الكاملة', { rows: 5 }),
       L('stats', 'الإحصائيات', [T('value', 'الرقم (مثال: 120+)'), I('label', 'الوصف')], (it) => `${it.value} ${tr(it.label)}`),
       L('skills', 'المهارات', [I('name', 'المهارة'), N('level', 'المستوى %')], (it) => tr(it.name)),
       T('tools', 'الأدوات التي تستخدمها'), G('cv', 'السيرة الذاتية', [I('label', 'نص الزر'), IMG('file', 'ملف PDF', { file: true, hint: 'اتركه فارغاً لإخفاء الزر.' })])] },

@@ -42,12 +42,24 @@
     spark: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/>',
     camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
     globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/>',
+    sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
+    moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
     arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>', close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', up: '<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>',
   };
   const icon = (n, cls) => svg(ICONS[n] || ICONS.spark, cls);
   const lines = (txt) => String(txt || '').split('\n').map((l) => l.trim()).filter(Boolean);
   const splitEl = (tag, cls, txt, words) => h(tag, { class: cls, 'data-split': '' }, lines(txt).map((l) => h('span', { class: 'split-line' }, words ? h('span', {}, l.split(/\s+/).map((w, i, a) => [h('span', { class: 'w', text: w }), i < a.length - 1 ? ' ' : null])) : h('span', { text: l }))));
   const num = (i) => String(i + 1).padStart(2, '0');
+  // the light theme needs the dark-ink versions of the logo wherever it sits on the page background
+  const isLight = () => document.documentElement.dataset.theme === 'light';
+  const logoSrc = (k) => { const s = C.settings || {}; return src(k === 'mark' ? (isLight() ? s.logoMarkOnLight || 'assets/logo-mark.png' : s.logoMark) : (isLight() ? s.logoOnLight || 'assets/logo-full.png' : s.logoFull)); };
+  function setTheme(th) {
+    const root = document.documentElement; root.classList.add('theme-anim'); root.dataset.theme = th;
+    try { localStorage.setItem('bs-theme', th); } catch { }
+    $$('[data-logo]').forEach((i) => { i.src = logoSrc(i.dataset.logo); });
+    const m = $('meta[name=theme-color]'); if (m) m.content = getComputedStyle(root).getPropertyValue('--c-bg').trim();
+    dispatchEvent(new Event('bs-theme')); setTimeout(() => root.classList.remove('theme-anim'), 650);
+  }
 
   /* ---------- theme ---------- */
   function applyTheme() {
@@ -100,16 +112,13 @@
   }
 
   function sAbout(no) {
-    const d = C.about || {}, s = C.settings || {};
-    const photo = h('div', { class: 'photo' },
-      d.photo ? h('img', { class: 'fill', src: src(d.photo), alt: t(s.brandName), loading: 'lazy' }) : h('img', { class: 'mark', src: src(s.logoMark), alt: '' }),
-      h('i', { class: 'fl a' }), h('i', { class: 'fl b' }));
+    const d = C.about || {};
     return h('section', { class: 'sec', id: 'about' }, h('div', { class: 'container about-grid' },
-      h('div', { class: 'about-media' }, photo, t(s.brandName) ? h('div', { class: 'badge' }, t(s.brandName)) : null),
-      h('div', {},
+      h('div', { class: 'about-intro' },
         h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)),
         splitEl('h2', 'h2', t(d.title)),
-        h('div', { class: 'about-body' }, h('p', { class: 'lead rv', text: t(d.lead) }), h('p', { class: 'rv', text: t(d.body) })),
+        h('div', { class: 'about-body' }, h('p', { class: 'lead rv', text: t(d.lead) }), h('p', { class: 'rv', text: t(d.body) }))),
+      h('div', { class: 'about-facts' },
         h('div', { class: 'stats' }, (d.stats || []).map((x) => h('div', { class: 'stat rv' }, h('b', { 'data-count': x.value, text: x.value }), h('span', { text: t(x.label) })))),
         h('div', { class: 'skills' }, (d.skills || []).map((x) => h('div', { class: 'skill rv' },
           h('div', { class: 'skill-head' }, h('span', { text: t(x.name) }), h('em', { text: (x.level || 0) + '%' })),
@@ -195,7 +204,7 @@
   function sFooter() {
     const d = C.footer || {}, s = C.settings || {};
     return h('footer', { class: 'footer' }, h('div', { class: 'container' },
-      h('div', { class: 'foot-logo rv' }, h('img', { src: src(s.logoFull), alt: t(s.brandName) })),
+      h('div', { class: 'foot-logo rv' }, h('img', { src: logoSrc('full'), 'data-logo': 'full', alt: t(s.brandName) })),
       h('div', { class: 'foot-row' }, h('span', { text: `© ${new Date().getFullYear()} ${t(s.brandName)} — ${t(d.text)}` }), h('span', { text: t(d.tagline) }),
         h('button', { class: 'to-top', 'data-top': '' }, t(d.top), h('span', { class: 'round' }, icon('up'))))));
   }
@@ -208,9 +217,9 @@
     const secs = (C.sections || []).filter((x) => x.visible && t(x.nav));
     const link = (x) => h('a', { href: '#' + x.id, 'data-nav': x.id, text: t(x.nav) });
     $('#header').replaceChildren(h('div', { class: 'container hd' },
-      h('a', { class: 'brand', href: '#hero', 'aria-label': t(s.brandName) }, h('img', { src: src(s.logoMark), alt: '' }), h('span', { text: t(s.brandName) })),
+      h('a', { class: 'brand', href: '#hero', 'aria-label': t(s.brandName) }, h('img', { src: logoSrc('mark'), 'data-logo': 'mark', alt: '' }), h('span', { text: t(s.brandName) })),
       h('nav', { class: 'nav' }, h('i', { class: 'nav-pill' }), secs.map(link)),
-      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta mag', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
+      h('div', { class: 'hd-actions' }, ((C.hero || {}).cta2 || {}).label && t(C.hero.cta2.label) ? h('a', { class: 'hd-cta mag', href: C.hero.cta2.link || '#contact' }, t(C.hero.cta2.label), icon('arrow')) : null, s.showThemeSwitch !== false ? h('button', { class: 'theme-t', 'aria-label': 'Light / dark' }, icon('sun', 'i-sun'), icon('moon', 'i-moon')) : null, s.showLangSwitch !== false ? h('button', { class: 'lang', 'aria-label': 'Language', text: lang === 'ar' ? 'EN' : 'عربي', style: lang === 'ar' ? '' : 'font-family:var(--f-ar)' }) : null,
         h('button', { class: 'burger', 'aria-label': 'Menu' }, h('i'), h('i')))));
     navPill();
     $('#menu').replaceChildren(...secs.map((x, i) => { const a = link(x); a.style.transitionDelay = (i * 60 + 200) + 'ms'; return a; }));
@@ -246,13 +255,15 @@
   /* ---------- hero particle field: drifting diamonds, mouse constellation, click burst ---------- */
   function heroFX(hero, sig) {
     const cv = $('.hero-fx', hero); if (!cv) return;
-    const ctx = cv.getContext('2d'), cs = getComputedStyle(document.documentElement);
-    const col = [cs.getPropertyValue('--c-accent').trim() || '#c4e3c2', cs.getPropertyValue('--c-sage').trim() || '#8da58f', cs.getPropertyValue('--c-text').trim() || '#eef6ee'];
+    const ctx = cv.getContext('2d');
+    let col = [];
+    const readCol = () => { const cs = getComputedStyle(document.documentElement); col = [cs.getPropertyValue('--c-accent').trim() || '#c4e3c2', cs.getPropertyValue('--c-sage').trim() || '#8da58f', cs.getPropertyValue('--c-text').trim() || '#eef6ee']; };
+    readCol(); addEventListener('bs-theme', readCol, sig);
     let W = 0, H = 0, dpr = 1, parts = [], rings = [], mx = -999, my = -999, inside = false, visible = true;
     const rand = (a, b) => a + Math.random() * (b - a);
     const make = (x, y, burst) => {
       const z = rand(.35, 1), ang = rand(0, 6.283), sp = burst ? rand(2.2, 6) : rand(.12, .38);
-      return { x, y, bx: burst ? 0 : Math.cos(ang) * sp * z, by: burst ? 0 : Math.sin(ang) * sp * z - .05, vx: Math.cos(ang) * sp * (burst ? 1 : z), vy: Math.sin(ang) * sp * (burst ? 1 : z), s: rand(3, 9) * z, r: rand(0, 6.283), vr: rand(-.012, .012), z, c: col[Math.random() < .62 ? 0 : Math.random() < .6 ? 1 : 2], life: burst ? 1 : -1 };
+      return { x, y, bx: burst ? 0 : Math.cos(ang) * sp * z, by: burst ? 0 : Math.sin(ang) * sp * z - .05, vx: Math.cos(ang) * sp * (burst ? 1 : z), vy: Math.sin(ang) * sp * (burst ? 1 : z), s: rand(3, 9) * z, r: rand(0, 6.283), vr: rand(-.012, .012), z, ci: Math.random() < .62 ? 0 : Math.random() < .6 ? 1 : 2, life: burst ? 1 : -1 };
     };
     const size = () => {
       const r = hero.getBoundingClientRect(); dpr = Math.min(devicePixelRatio || 1, 2); W = r.width; H = r.height;
@@ -286,7 +297,7 @@
         for (const p of parts) { const d = Math.hypot(p.x - mx, p.y - my); if (d < 170) { ctx.globalAlpha = (1 - d / 170) * .35; ctx.strokeStyle = col[0]; ctx.beginPath(); ctx.moveTo(mx, my); ctx.lineTo(p.x, p.y); ctx.stroke(); } }
       }
       for (const p of parts) {
-        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(.7854 + p.r); ctx.globalAlpha = (p.life >= 0 ? p.life : 1) * (.25 + p.z * .6); ctx.fillStyle = p.c;
+        ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(.7854 + p.r); ctx.globalAlpha = (p.life >= 0 ? p.life : 1) * (.25 + p.z * .6); ctx.fillStyle = col[p.ci];
         const s = p.s; ctx.beginPath(); ctx.roundRect ? ctx.roundRect(-s / 2, -s / 2, s, s, s * .22) : ctx.rect(-s / 2, -s / 2, s, s); ctx.fill(); ctx.restore();
       }
       for (let i = rings.length - 1; i >= 0; i--) {
@@ -400,6 +411,7 @@
       if (e.target.closest('[data-top]')) go('top');
     }, sig);
     $('.lang') && $('.lang').addEventListener('click', () => { lang = lang === 'ar' ? 'en' : 'ar'; try { localStorage.setItem('bs-lang', lang); } catch { } mount(); });
+    $('.theme-t') && $('.theme-t').addEventListener('click', () => setTheme(isLight() ? 'dark' : 'light'), sig);
     const burger = $('.burger'), menu = $('#menu');
     burger && burger.addEventListener('click', () => { const open = !menu.classList.contains('open'); menu.classList.toggle('open', open); burger.classList.toggle('open', open); open ? lenis && lenis.stop() : lenis && lenis.start(); });
     // filters
@@ -487,12 +499,6 @@
       });
       // skill bars
       $$('.bar i').forEach((el) => gsap.to(el, { scaleX: (+el.dataset.level || 0) / 100, duration: 1.6, ease: 'power3.out', scrollTrigger: { trigger: el, start: 'top 92%', once: true } }));
-      // about photo
-      const ph = $('.photo'); if (ph) {
-        gsap.from(ph, { clipPath: 'inset(100% 0 0 0 round 28px)', duration: 1.6, ease: 'power4.inOut', scrollTrigger: { trigger: ph, start: 'top 85%', once: true } });
-        const im = $('img.fill', ph); im && gsap.to(im, { yPercent: 8, ease: 'none', scrollTrigger: { trigger: ph, start: 'top bottom', end: 'bottom top', scrub: true } });
-        gsap.from($('.badge'), { scale: 0, rotate: -12, duration: 1, ease: 'back.out(1.8)', scrollTrigger: { trigger: ph, start: 'top 60%', once: true } });
-      }
       // process: one scrubbed progress value drives the track fill, the runner and the lit steps
       const pr = $('.pr'); if (pr) {
         const steps = $$('.pr-step', pr), n = steps.length, o = { p: 0 };
@@ -553,7 +559,7 @@
     const done = () => { pl.remove(); body.classList.remove('loading'); lenis && lenis.start(); };
     if (!hasGSAP() || REDUCED || IS_PREVIEW || sessionStorage.getItem('bs-seen')) { done(); heroIn(); return; }
     sessionStorage.setItem('bs-seen', '1');
-    $('#plLogo').src = $('#plLogoFill').src = src(s.logoMark);
+    $('#plLogo').src = $('#plLogoFill').src = logoSrc('mark');
     const o = { v: 0 }, { gsap } = window;
     lenis && lenis.stop();
     gsap.timeline({ onComplete: done })

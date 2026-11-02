@@ -8,9 +8,11 @@
     },
     "defaultLang": "ar",
     "showLangSwitch": true,
+    "showThemeSwitch": true,
     "logoFull": "assets/logo-full-light.png",
     "logoMark": "assets/logo-mark-light.png",
     "logoOnLight": "assets/logo-full.png",
+    "logoMarkOnLight": "assets/logo-mark.png",
     "favicon": "assets/logo-mark.png",
     "ogImage": "",
     "colors": {
@@ -69,7 +71,6 @@
       "ar": "أؤمن أن التصميم الجيد ليس زينة، بل لغة تُقنع وتُلهم. أبدأ كل مشروع بفهم عميق لقصة العلامة وجمهورها، ثم أترجمها إلى عناصر بصرية متقنة تجمع بين جمال الخط العربي ونظافة التصميم الحديث.",
       "en": "I believe good design isn't decoration — it's a language that persuades and inspires. I start every project by understanding the brand's story and audience, then translate it into refined visuals that blend the beauty of Arabic calligraphy with clean modern design."
     },
-    "photo": "",
     "stats": [
       { "value": "120+", "label": { "ar": "مشروع منجز", "en": "Projects done" } },
       { "value": "5+", "label": { "ar": "سنوات خبرة", "en": "Years of experience" } },
