@@ -504,9 +504,6 @@
       // hero parallax on scroll
       if ($('.hero-art')) gsap.to('.hero-art', { yPercent: 14, ease: 'none', scrollTrigger: { trigger: '.hero', start: 'top top', end: 'bottom top', scrub: true } });
       if ($('.hero-text')) gsap.to('.hero-text', { yPercent: -8, opacity: .2, ease: 'none', scrollTrigger: { trigger: '.hero', start: '55% top', end: 'bottom top', scrub: true } });
-      // work cards: image parallax
-      $$('.work-media img').forEach((im) => gsap.fromTo(im, { yPercent: -6 }, { yPercent: 6, ease: 'none', scrollTrigger: { trigger: im.parentElement, start: 'top bottom', end: 'bottom top', scrub: true } }));
-      $$('.work-media img').forEach((im) => { im.style.height = '112%'; im.style.top = '-6%'; });
       heroFX($('.hero'), { signal: ac.signal });
       // active nav
       (C.sections || []).filter((s) => s.visible && BUILD[s.id]).forEach((s) => { const el = $('#' + s.id); el && ScrollTrigger.create({ trigger: el, start: 'top 55%', end: 'bottom 55%', onToggle: (self) => { const a = $(`[data-nav="${s.id}"]`); a && $$('.nav a').forEach((x) => x.classList.toggle('active', self.isActive ? x === a : x.classList.contains('active') && x !== a)); const nv = $('.nav'); nv && nv._move && nv._move(); } }); });
