@@ -42,6 +42,7 @@
     spark: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><path d="M19 17v4M17 19h4"/>',
     camera: '<path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/>',
     globe: '<circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20z"/>',
+    clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
     sun: '<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>',
     moon: '<path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/>',
     arrow: '<path d="M5 12h14"/><path d="m13 6 6 6-6 6"/>', close: '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>', up: '<path d="M12 19V5"/><path d="m5 12 7-7 7 7"/>',
@@ -172,7 +173,7 @@
       h('div', { class: 'ct-row' }, fld('input', 'name', t(f.name), { required: true, autocomplete: 'name' }), fld('input', 'contact', t(f.contact), { autocomplete: 'email' })),
       services.length ? h('fieldset', { class: 'ct-opts' }, h('legend', { text: t(f.service) }),
         services.map((s) => h('label', { class: 'ct-opt' }, h('input', { type: 'radio', name: 'service', value: s }), h('span', { text: s })))) : null,
-      fld('textarea', 'message', t(f.message), { required: true, rows: 4 }),
+      h('div', { class: 'fld box' }, h('textarea', { name: 'message', placeholder: ' ', required: true, rows: 5 }), h('label', { text: t(f.message) })),
       h('input', { class: 'hp', name: 'website', tabindex: '-1', autocomplete: 'off', 'aria-hidden': 'true' }),
       send, msg);
     form.addEventListener('submit', async (e) => {
@@ -192,12 +193,13 @@
           h('div', {}, h('div', { class: 'eyebrow rv' }, h('span', { class: 'no', text: no }), t(d.eyebrow)), splitEl('h2', 'contact-big', t(d.title)))),
         h('div', { class: 'ct-grid' },
           h('div', { class: 'ct-side' },
-            h('p', { class: 'lead rv', text: t(d.subtitle) }),
-            t(d.status) ? h('div', { class: 'ct-status rv' }, h('span', { class: 'pulse', 'aria-hidden': 'true' }), h('div', {}, h('b', { text: t(d.status) }), t(d.response) ? h('small', { text: t(d.response) }) : null)) : null,
+            h('p', { class: 'ct-sub rv', text: t(d.subtitle) }),
+            t(d.status) || t(d.response) ? h('ul', { class: 'ct-facts rv' },
+              t(d.status) ? h('li', {}, h('span', { class: 'ct-ic', 'aria-hidden': 'true' }, h('i', { class: 'pulse' })), h('b', { text: t(d.status) })) : null,
+              t(d.response) ? h('li', {}, h('span', { class: 'ct-ic', 'aria-hidden': 'true' }, icon('clock')), h('b', { text: t(d.response) })) : null) : null,
             links.map(([k, v, href]) => h('a', { class: 'clink rv', href, target: href.startsWith('http') ? '_blank' : null, rel: 'noopener' }, h('span', { text: k }), h('b', { text: v }))),
             t(d.location) ? h('div', { class: 'clink rv', style: 'direction:inherit' }, h('span', { text: '◆' }), h('b', { text: t(d.location) })) : null,
-            socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null,
-          t(d.cta) ? h('a', { class: 'ct-orb mag rv', href: '#ct-form' }, h('span', { class: 'ct-orb-ring', 'aria-hidden': 'true' }), h('span', { class: 'ct-orb-in' }, icon('arrow', 'arr'), h('b', { text: t(d.cta) }))) : null),
+            socials.length ? h('div', { class: 'socials rv' }, socials.map((s) => h('a', { class: 'chip', href: s.url, target: '_blank', rel: 'noopener', text: s.name }))) : null),
           form)));
   }
 
@@ -416,7 +418,6 @@
     burger && burger.addEventListener('click', () => { const open = !menu.classList.contains('open'); menu.classList.toggle('open', open); burger.classList.toggle('open', open); open ? lenis && lenis.stop() : lenis && lenis.start(); });
     // filters
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
-    $('.ct-orb') && $('.ct-orb').addEventListener('click', () => setTimeout(() => { const n = $('#ct-form input[name=name]'); n && n.focus({ preventScroll: true }); }, 1200), sig);
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     activeCat = 'all';
     // spotlight that follows the pointer inside service cards
@@ -427,14 +428,6 @@
       const y = scrollY, hd = $('#header'); hd.classList.toggle('scrolled', y > 40); hd.classList.toggle('hide', y > last && y > 400 && !$('#menu.open')); last = y;
       const p = y / Math.max(1, document.documentElement.scrollHeight - innerHeight); $('#progress').style.transform = `scaleX(${p})`;
     }, { passive: true, ...sig });
-    // cursor hover states
-    if (FINE) {
-      document.addEventListener('mouseover', (e) => {
-        const cur = $('.cursor'); const w = e.target.closest('.work');
-        cur.classList.toggle('view', !!w); if (w) $('.c-ring span').textContent = t((C.works || {}).viewLabel) || 'View';
-        cur.classList.toggle('hover', !w && !!e.target.closest('a, button, .chip, .chip3d, .card, input, textarea, select'));
-      }, sig);
-    }
   }
 
   function closeMenu() { $('#menu').classList.remove('open'); $('.burger') && $('.burger').classList.remove('open'); lenis && lenis.start(); }
@@ -573,14 +566,6 @@
   async function boot() {
     document.body.classList.add('loading');
     if (!C.sections) { try { C = await (await fetch('/api/content')).json(); } catch { } }
-    if (FINE) {
-      document.body.classList.add('has-cursor');
-      if (hasGSAP()) {
-        const dot = $('.c-dot'), ring = $('.c-ring');
-        const dx = gsap.quickTo(dot, 'x', { duration: .12 }), dy = gsap.quickTo(dot, 'y', { duration: .12 }), rx = gsap.quickTo(ring, 'x', { duration: .5, ease: 'power3' }), ry = gsap.quickTo(ring, 'y', { duration: .5, ease: 'power3' });
-        addEventListener('mousemove', (e) => { dx(e.clientX); dy(e.clientY); rx(e.clientX); ry(e.clientY); }, { passive: true });
-      }
-    }
     if (typeof window.Lenis !== 'undefined' && !REDUCED && !IS_PREVIEW) {
       lenis = new window.Lenis({ duration: 1.2, smoothWheel: true });
       if (hasGSAP()) { lenis.on('scroll', ScrollTrigger.update); gsap.ticker.add((time) => lenis.raf(time * 1000)); gsap.ticker.lagSmoothing(0); }
