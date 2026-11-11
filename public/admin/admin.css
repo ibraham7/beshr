@@ -1,7 +1,7 @@
 :root { --bg: #081a21; --panel: #0e2630; --panel2: #123240; --line: rgba(238, 246, 238, .1); --text: #eef6ee; --muted: #8fa7a0; --accent: #c4e3c2; --teal: #1e5060; --danger: #ff8f8f; --r: 14px; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
-body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans Arabic', 'Inter', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
+body { background: var(--bg); color: var(--text); font-family: 'IBM Plex Sans Arabic', system-ui, sans-serif; font-size: 15px; line-height: 1.6; }
 [hidden] { display: none !important; }
 button { font: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 input, textarea, select { font: inherit; color: var(--text); background: var(--bg); border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; width: 100%; outline: none; transition: border-color .2s, box-shadow .2s; }
