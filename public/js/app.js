@@ -140,7 +140,7 @@
     const d = C.works || {};
     const cats = d.categories || [];
     const filters = h('div', { class: 'filters rv' }, h('button', { class: 'chip on', 'data-cat': 'all', text: t(d.allLabel) || 'All' }), cats.map((c) => h('button', { class: 'chip', 'data-cat': c.id, text: t(c.name) })));
-    const items = (d.items || []).map((w, i) => h('button', { class: 'work w-' + (w.size || 'third'), 'data-cat': w.category, 'data-i': i, 'aria-label': t(w.title) },
+    const items = (d.items || []).map((w, i) => h('button', { class: 'work w-' + (w.size && w.size !== 'auto' ? w.size : 'auto'), 'data-cat': w.category, 'data-i': i, 'aria-label': t(w.title) },
       h('div', { class: 'work-media' }, /\.(mp4|webm)$/i.test(w.image || '') ? h('video', { src: src(w.image), muted: true, loop: true, autoplay: true, playsinline: true }) : h('img', { src: src(w.image), alt: t(w.title), loading: 'lazy' })),
       h('div', { class: 'work-shade' }), h('span', { class: 'work-go', 'aria-hidden': 'true' }, icon('arrow')),
       h('div', { class: 'work-info' }, h('div', {}, h('h3', { text: t(w.title) }), h('span', { text: t((cats.find((c) => c.id === w.category) || {}).name) })), w.year ? h('span', { class: 'yr', text: w.year }) : null)));
@@ -420,7 +420,19 @@
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
     const grid = $('.masonry'); if (grid) {
-      $$('img, video', grid).forEach((m) => { m.addEventListener('load', relayoutWorks, sig); m.addEventListener('loadedmetadata', relayoutWorks, sig); });
+      // a wide design (banner, cover) gets a wide slot by itself; an explicit size from the admin always wins
+      const autoSize = (m) => {
+        const card = m.closest('.work'); if (!card || !card.classList.contains('w-auto')) return;
+        const wd = m.naturalWidth || m.videoWidth, ht = m.naturalHeight || m.videoHeight; if (!wd || !ht) return;
+        const ratio = wd / ht;
+        card.classList.remove('w-auto'); card.classList.add(ratio >= 3 ? 'w-full' : ratio >= 2.2 ? 'w-twothirds' : ratio >= 1.9 ? 'w-half' : 'w-third');
+        relayoutWorks();
+      };
+      $$('img, video', grid).forEach((m) => {
+        const done = () => { autoSize(m); relayoutWorks(); };
+        m.addEventListener('load', done, sig); m.addEventListener('loadedmetadata', done, sig);
+        if (m.complete && m.naturalWidth) done();
+      });
       const ro = new ResizeObserver(relayoutWorks); ro.observe(grid); cleanups.push(() => ro.disconnect());
       relayoutWorks();
     }
