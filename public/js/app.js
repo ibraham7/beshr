@@ -140,8 +140,8 @@
     const d = C.works || {};
     const cats = d.categories || [];
     const filters = h('div', { class: 'filters rv' }, h('button', { class: 'chip on', 'data-cat': 'all', text: t(d.allLabel) || 'All' }), cats.map((c) => h('button', { class: 'chip', 'data-cat': c.id, text: t(c.name) })));
-    const items = (d.items || []).map((w, i) => h('button', { class: 'work', 'data-cat': w.category, 'data-i': i, 'aria-label': t(w.title) },
-      h('div', { class: 'work-media ' + (w.ratio || 'portrait') }, /\.(mp4|webm)$/i.test(w.image || '') ? h('video', { src: src(w.image), muted: true, loop: true, autoplay: true, playsinline: true }) : h('img', { src: src(w.image), alt: t(w.title), loading: 'lazy' })),
+    const items = (d.items || []).map((w, i) => h('button', { class: 'work w-' + (w.size || 'third'), 'data-cat': w.category, 'data-i': i, 'aria-label': t(w.title) },
+      h('div', { class: 'work-media' }, /\.(mp4|webm)$/i.test(w.image || '') ? h('video', { src: src(w.image), muted: true, loop: true, autoplay: true, playsinline: true }) : h('img', { src: src(w.image), alt: t(w.title), loading: 'lazy' })),
       h('div', { class: 'work-shade' }), h('span', { class: 'work-go', 'aria-hidden': 'true' }, icon('arrow')),
       h('div', { class: 'work-info' }, h('div', {}, h('h3', { text: t(w.title) }), h('span', { text: t((cats.find((c) => c.id === w.category) || {}).name) })), w.year ? h('span', { class: 'yr', text: w.year }) : null)));
     return h('section', { class: 'sec', id: 'works' }, h('div', { class: 'container' }, secHead('works', no), filters, h('div', { class: 'masonry' }, items)));
@@ -419,6 +419,11 @@
     // filters
     $$('.chip[data-cat]').forEach((b) => b.addEventListener('click', () => filterWorks(b.dataset.cat)));
     $$('.work').forEach((w) => w.addEventListener('click', () => openBox(+w.dataset.i)));
+    const grid = $('.masonry'); if (grid) {
+      $$('img, video', grid).forEach((m) => { m.addEventListener('load', relayoutWorks, sig); m.addEventListener('loadedmetadata', relayoutWorks, sig); });
+      const ro = new ResizeObserver(relayoutWorks); ro.observe(grid); cleanups.push(() => ro.disconnect());
+      relayoutWorks();
+    }
     activeCat = 'all';
     // spotlight that follows the pointer inside service cards
     if (FINE) $$('.card, .ct-form').forEach((c) => c.addEventListener('pointermove', (e) => { const r = c.getBoundingClientRect(); c.style.setProperty('--mx', (e.clientX - r.left) + 'px'); c.style.setProperty('--my', (e.clientY - r.top) + 'px'); }, sig));
@@ -432,12 +437,23 @@
 
   function closeMenu() { $('#menu').classList.remove('open'); $('.burger') && $('.burger').classList.remove('open'); lenis && lenis.start(); }
 
+  /* works grid: the owner picks each item's width (third / half / two-thirds / full);
+     its height comes from the design itself, measured into small grid rows so nothing is cropped */
+  let lwTimer = 0;
+  function layoutWorks() {
+    const grid = $('.masonry'); if (!grid) return;
+    const cs = getComputedStyle(grid), unit = parseFloat(cs.gridAutoRows) || 8, gap = parseFloat(cs.columnGap) || 22;
+    $$('.work', grid).forEach((w) => { if (!w.classList.contains('out')) w.style.gridRowEnd = 'span ' + Math.max(1, Math.ceil((w.offsetHeight + gap) / unit)); });
+  }
+  const relayoutWorks = () => { clearTimeout(lwTimer); lwTimer = setTimeout(layoutWorks, 30); };
+
   function filterWorks(cat) {
     activeCat = cat; $$('.chip[data-cat]').forEach((b) => b.classList.toggle('on', b.dataset.cat === cat));
     const all = $$('.work'); const show = all.filter((w) => cat === 'all' || w.dataset.cat === cat);
-    if (!hasGSAP()) { all.forEach((w) => w.classList.toggle('out', !show.includes(w))); return; }
+    if (!hasGSAP()) { all.forEach((w) => w.classList.toggle('out', !show.includes(w))); layoutWorks(); return; }
     gsap.to(all, { opacity: 0, scale: .94, duration: .25, ease: 'power2.in', onComplete: () => {
       all.forEach((w) => w.classList.toggle('out', !show.includes(w)));
+      layoutWorks();
       gsap.fromTo(show, { opacity: 0, y: 40, scale: .96 }, { opacity: 1, y: 0, scale: 1, duration: .8, stagger: .07, ease: 'power3.out', clearProps: 'transform,translate,rotate,scale', onComplete: () => window.ScrollTrigger && ScrollTrigger.refresh() });
     } });
   }
