@@ -2,16 +2,16 @@ services:
   - type: web
     name: beshr
     runtime: node
-    plan: starter            # persistent disks need a paid plan
+    plan: free
     buildCommand: echo "no build step"
     startCommand: node server.js
     healthCheckPath: /api/content
     envVars:
-      - key: DATA_DIR
-        value: /var/data
+      # Site content, admin password, messages and uploads live in Supabase,
+      # so nothing is lost when the free instance restarts.
+      - key: SUPABASE_URL
+        value: https://jxhspeefkzsnvbunairn.supabase.co
+      - key: SUPABASE_SERVICE_KEY
+        sync: false          # secret key from Supabase → Project Settings → API Keys
       - key: ADMIN_PASSWORD
-        sync: false          # set in the Render dashboard (used on first start only)
-    disk:
-      name: beshr-data
-      mountPath: /var/data
-      sizeGB: 1
+        sync: false          # used only the very first time, before a password is saved
