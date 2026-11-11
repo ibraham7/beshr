@@ -109,7 +109,8 @@ input, textarea { cursor: text; }
 html[lang=en] .h2 { letter-spacing: -.02em; line-height: 1.08; }
 .h2 em { font-style: normal; color: var(--c-accent); }
 .lead { font-size: clamp(18px, 1.6vw, 22px); color: var(--muted); max-width: 62ch; }
-.split-line { display: block; overflow: hidden; padding-block: .06em; margin-block: -.06em; }
+[data-split] { display: flex; flex-direction: column; } /* flex: sibling margins do not collapse, so the extra clip room below costs no layout space */
+.split-line { display: block; overflow: hidden; padding-block: .3em .42em; margin-block: -.3em -.42em; }
 .split-line > span { display: inline-block; will-change: transform; }
 .rv { will-change: transform, opacity; }
 
@@ -120,7 +121,7 @@ html[lang=en] .h2 { letter-spacing: -.02em; line-height: 1.08; }
   mask-image: linear-gradient(#000 70%, transparent); -webkit-mask-image: linear-gradient(#000 70%, transparent); }
 .hero-grid { position: absolute; inset: 0; pointer-events: none; opacity: .5; background-image: linear-gradient(var(--line) 1px, transparent 1px), linear-gradient(90deg, var(--line) 1px, transparent 1px); background-size: 90px 90px; mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%); -webkit-mask-image: radial-gradient(ellipse at 60% 40%, #000 0%, transparent 70%); }
 .hero-fx { position: absolute; inset: 0; pointer-events: none; mask-image: linear-gradient(#000 65%, transparent); -webkit-mask-image: linear-gradient(#000 65%, transparent); }
-.hero h1 .w { display: inline-block; transition: translate .6s var(--soft); }
+.hero h1 .w { display: inline-block; padding-block: .3em .42em; margin-block: -.3em -.42em; transition: translate .6s var(--soft); }
 .hero-in { position: relative; display: grid; grid-template-columns: 1.1fr .9fr; gap: clamp(24px, 5vw, 80px); align-items: center; }
 .hero h1 { font-family: var(--f-display); font-weight: 700; font-size: clamp(38px, 5.4vw, 84px); line-height: 1.12; letter-spacing: -.01em; margin-bottom: 24px; }
 html[lang=en] .hero h1 { font-size: clamp(38px, 5vw, 76px); letter-spacing: -.02em; line-height: 1.05; }
